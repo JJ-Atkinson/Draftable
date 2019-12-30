@@ -52,7 +52,7 @@ Editors should be pluggable and selectable by the user. Any mode combination of 
 - [Ace code editor (from amazon)][7]
 - [Paren soup (nice cljs-native clojure editor)][8]
 
-#### Research links
+## Research links
 
 - [Lightemod - all in one clojure editor (education focused?)][12]
 - [Rewrite-clj - useful for ast and paredit?][13]
