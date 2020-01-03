@@ -4,6 +4,7 @@
 (logo in progress)  
 
 A union of draft and table. Vision: to fulfill and maybe exceed light-table's original goals.  
+<br/>
 
 ## Why?
 
