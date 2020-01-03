@@ -1,9 +1,9 @@
 ## Draftable
 
 <img align="left" src="https://raw.githubusercontent.com/JJ-Atkinson/Draftable/master/logo/logo_100x73.png">
-(logo in progress)
+(logo in progress)  
 
-A union of draft and table. Vision: to fulfill and maybe exceed light-table's original goals.
+A union of draft and table. Vision: to fulfill and maybe exceed light-table's original goals.  
 
 ## Why?
 
