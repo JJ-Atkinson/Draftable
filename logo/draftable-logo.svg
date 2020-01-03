@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="630.02734"
+   height="462.15625"
+   version="1.1"
+   id="svg918"
+   sodipodi:docname="draftable-logo-final.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
+  <metadata
+     id="metadata922">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1080"
+     inkscape:window-height="1857"
+     id="namedview920"
+     showgrid="false"
+     inkscape:zoom="0.42048262"
+     inkscape:cx="621.84449"
+     inkscape:cy="-1043.0925"
+     inkscape:window-x="-8"
+     inkscape:window-y="228"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g916" />
+  <desc
+     id="desc894">C:\Users\jarre\Downloads\logo3.dxf - scale = 1.000000, origin = (0.000000, 0.000000), method = manual</desc>
+  <defs
+     id="defs908">
+    <marker
+       id="DistanceX"
+       orient="auto"
+       refX="0"
+       refY="0"
+       style="overflow:visible">
+      <path
+         d="M 3,-3 -3,3 M 0,-5 V 5"
+         style="stroke:#000000;stroke-width:0.5"
+         id="path896"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <pattern
+       height="8"
+       id="Hatch"
+       patternUnits="userSpaceOnUse"
+       width="8"
+       x="0"
+       y="0">
+      <path
+         d="M8 4 l-4,4"
+         linecap="square"
+         stroke="#000000"
+         stroke-width="0.25"
+         id="path899" />
+      <path
+         d="M6 2 l-4,4"
+         linecap="square"
+         stroke="#000000"
+         stroke-width="0.25"
+         id="path901" />
+      <path
+         d="M4 0 l-4,4"
+         linecap="square"
+         stroke="#000000"
+         stroke-width="0.25"
+         id="path903" />
+    </pattern>
+    <symbol
+       id="*MODEL_SPACE" />
+    <symbol
+       id="*PAPER_SPACE" />
+  </defs>
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="0"
+     id="g916"
+     transform="translate(-106.13477,-293.12109)">
+    <path
+       style="fill:#66001a;fill-opacity:1;stroke:none;stroke-width:0.76313734"
+       d="m 106.13477,293.12109 v 21.12696 a 25.201055,21.127185 0 0 1 25.20117,21.12695 v 372.36719 a 25.201055,21.127185 0 0 1 -25.20117,21.12695 v 26.4082 h 630.02734 v -26.4082 A 25.201055,21.127185 0 0 1 710.96094,707.74219 V 335.375 a 25.201055,21.127185 0 0 1 25.20117,-21.12695 v -21.12696 z m 306.96484,56.47852 244.30859,1.62109 v 52.81641 H 540.85352 V 691.89648 H 477.85156 V 404.03711 H 465.25 c -2.37819,-29.91824 -23.74644,-50.20075 -52.15039,-54.4375 z m -228.21094,1.62109 h 119.70508 v 52.81641 H 247.89258 V 639.07812 H 364.44727 V 404.03711 h -9.45118 V 351.2207 h 9.45118 a 63.002639,52.817963 0 0 1 63.00195,52.81641 v 235.04101 a 63.002639,52.817963 0 0 1 -63.00195,52.81836 h -179.5586 z"
+       id="path914"
+       inkscape:export-xdpi="22.856152"
+       inkscape:export-ydpi="22.856152"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>
