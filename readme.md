@@ -1,5 +1,7 @@
 ## Draftable
 
+<img align="left" width="100" height="100" src="https://raw.githubusercontent.com/JJ-Atkinson/Draftable/master/logo/logo_150x110.png">
+
 A union of draft and table. Vision: to fulfill and maybe exceed light-table's original goals.
 
 ## Why?
