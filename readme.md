@@ -6,6 +6,8 @@
 A union of draft and table. Vision: to fulfill and maybe exceed light-table's original goals.  
 <br/>
 
+***Status:*** I have 3 projects in progress testing apis for various componenents listed below.
+
 ## Why?
 
 At this point, I have tried to some extent most of the available Clojure editors. LightTable, IntelliJ+Cursive, Spacemacs+Cider, Atom+Proto REPL, Nightcode, and Calva. The only thing that stuck was a love for paredit with some custom vim keybindings. Every editor had something I liked, but none combined everything. For instance, I loved the idea of [cards][2] in LightTable ([they were never implemented][1]). I love the embeddable graphs of proto-repl. Nightcode's simplicity is fantastic. Spacemacs is totally awesome for keyboard navigability. Cursive is part of IntelliJ, which has phenomenal code navigation features.
