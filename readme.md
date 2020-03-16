@@ -1,9 +1,7 @@
-## Draftable
+## Neutron
 
-<img align="left" src="https://raw.githubusercontent.com/JJ-Atkinson/Draftable/master/logo/logo_100x73.png">
-(logo in progress)  
+(logo in progress)
 
-A union of draft and table. Vision: to fulfill and maybe exceed light-table's original goals.  
 <br/>
 
 ***Status:*** I have 3 projects in progress testing apis for various componenents listed below.
