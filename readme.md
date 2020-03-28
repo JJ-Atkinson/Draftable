@@ -1,6 +1,11 @@
-## Neutron
+## Fissure
 
-(logo in progress)
+> "You seem to know all about him," observed March, with a rather bewildered laugh, "and about a good many other people."  
+> Fisher's bald brow became abruptly corrugated, and a curious expression came into his eyes.  
+> "I know too much," he said. "That's what's the matter with me. That's what's the matter with all of us, and the whole show; we know too much. Too much about one another; too much about ourselves. That's why I'm really interested, just now, about one thing that I don't know."  
+> "And that is?" inquired the other.  
+> "Why that poor fellow is dead."  
+-- **The Man Who Knew Too Much**, G.K. Chesterton.
 
 <br/>
 
