@@ -93,6 +93,7 @@ This is core to the editor, allowing the development of the various corners to h
 - [clj-kondo][17]
     - note to self - it can print out an ns overview with definitions and line numbers
 - [Inspiring a Future Clojure editor _with forgotten lisp ux_ (Clojure conj 2017)][19]
+- [REPL integration for js projects][31]
 
 Thanks to @jlmr in slack for mentioning his name of cards - much easier to say than code bubbles.
 
@@ -125,3 +126,4 @@ Thanks to @jlmr in slack for mentioning his name of cards - much easier to say t
 [28]: http://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_extensions.html#how-to-get-the-extension-points-list
 [29]: https://code.visualstudio.com/api/extension-capabilities/overview
 [30]: https://github.com/atom/flight-manual.atom.io
+[31]: https://github.com/mauricioszabo/repl-tooling
