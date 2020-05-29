@@ -19,7 +19,7 @@ At this point, I have tried to some extent most of the available Clojure editors
 
 I could try to extend Cider, Fireplace, [Liquid][14], or lighttable. Why not? Cider, FP, and Liquid are non-starters because of the layout constraints they have, and one of the goals is to embed arbitrary HTML content into the editor itself. LightTable is a different issue since it is fully CLJS and electron based. I have dug into the code a fair amount, but it is simply [too complicated at this point for me to add to it][4].  Atom appears to [support cards][18], but some of the other features below would be difficult to impossible to implement. I’m not aware of any limitations around cards in vs code, but it is a bit more locked down than atom and I can’t see more functionality being implemented. 
 
-This is also a skill-building tool. I want to explore Fulcro, Pluggable architectures, and management of an OSS project. 
+This is also a skill-building tool. I want to explore Fulcro (after research now [Ful-Frame][32]), Pluggable architectures, and management of an OSS project. 
 
 ## Achievability 
 
@@ -127,3 +127,4 @@ Thanks to @jlmr in slack for mentioning his name of cards - much easier to say t
 [29]: https://code.visualstudio.com/api/extension-capabilities/overview
 [30]: https://github.com/atom/flight-manual.atom.io
 [31]: https://github.com/mauricioszabo/repl-tooling
+[32]: https://github.com/JJ-Atkinson/Ful-Frame
