@@ -96,7 +96,7 @@ This is core to the editor, allowing the development of the various corners to h
 - [REPL integration for js projects][31]
 - [React component for grid systems][33]
   - If needed, [React draggable components][34]
-- [React Tree View][35]
+- [React Tree View][35]. [Another][36]
 
 Thanks to @jlmr in slack for mentioning his name of cards - much easier to say than code bubbles.
 
@@ -134,3 +134,4 @@ Thanks to @jlmr in slack for mentioning his name of cards - much easier to say t
 [33]: https://github.com/STRML/react-grid-layout
 [34]: https://github.com/strml/react-draggable
 [35]: https://reactjsexample.com/a-hierarchical-object-tree-component-for-react/
+[36]: https://github.com/chenglou/react-treeview
