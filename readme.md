@@ -94,6 +94,9 @@ This is core to the editor, allowing the development of the various corners to h
     - note to self - it can print out an ns overview with definitions and line numbers
 - [Inspiring a Future Clojure editor _with forgotten lisp ux_ (Clojure conj 2017)][19]
 - [REPL integration for js projects][31]
+- [React component for grid systems][33]
+  - If needed, [React draggable components][34]
+- [React Tree View][35]
 
 Thanks to @jlmr in slack for mentioning his name of cards - much easier to say than code bubbles.
 
@@ -128,3 +131,6 @@ Thanks to @jlmr in slack for mentioning his name of cards - much easier to say t
 [30]: https://github.com/atom/flight-manual.atom.io
 [31]: https://github.com/mauricioszabo/repl-tooling
 [32]: https://github.com/JJ-Atkinson/Ful-Frame
+[33]: https://github.com/STRML/react-grid-layout
+[34]: https://github.com/strml/react-draggable
+[35]: https://reactjsexample.com/a-hierarchical-object-tree-component-for-react/
