@@ -71,6 +71,7 @@ Editors should be pluggable and selectable by the user. Any mode combination of 
 
 This is core to the editor, allowing the development of the various corners to happen in a decoupled manner. Also, what is a code editor without plugins?
 
+- [Most interesting - Integrent][37]. I think I will base my work off of this.
 - [SO Question][20]
 - [component library][21]
 - [mount (alt to component)][23] - [why not use component?][24]
@@ -135,3 +136,5 @@ Thanks to @jlmr in slack for mentioning his name of cards - much easier to say t
 [34]: https://github.com/strml/react-draggable
 [35]: https://reactjsexample.com/a-hierarchical-object-tree-component-for-react/
 [36]: https://github.com/chenglou/react-treeview
+[37]: https://github.com/weavejester/integrant
+
