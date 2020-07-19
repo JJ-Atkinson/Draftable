@@ -9,21 +9,25 @@
 
 <br/>
 
-***Status:*** I have 3 projects in progress testing apis for various componenents listed below.
+***Status:*** Underway, starting to rough out the plugin system based on Integrent. 
 
 ## Why?
 
-At this point, I have tried to some extent most of the available Clojure editors. LightTable, IntelliJ+Cursive, Spacemacs+Cider, Atom+Proto REPL, Nightcode, and Calva. The only thing that stuck was a love for paredit with some custom vim keybindings. Every editor had something I liked, but none combined everything. For instance, I loved the idea of [cards][2] in LightTable ([they were never implemented][1]). I love the embeddable graphs of proto-repl. Nightcode's simplicity is fantastic. Spacemacs is totally awesome for keyboard navigability. Cursive is part of IntelliJ, which has phenomenal code navigation features.
+At this point, I have tried most of the available Clojure editors. LightTable, IntelliJ+Cursive, Spacemacs+Cider, Atom+Proto REPL, Nightcode, and Calva. The only thing that stuck was a love for paredit with some custom vim keybindings. Every editor had something I liked, but none combined everything. For instance, I loved the idea of [cards][2] in LightTable ([they were never implemented][1]). I love the embeddable graphs of proto-repl. Nightcode's simplicity is fantastic. Spacemacs is totally awesome for keyboard navigability. Cursive is part of IntelliJ, which has phenomenal code navigation features. But, none have it all.
 
 ## Why start a new project?
 
 I could try to extend Cider, Fireplace, [Liquid][14], or lighttable. Why not? Cider, FP, and Liquid are non-starters because of the layout constraints they have, and one of the goals is to embed arbitrary HTML content into the editor itself. LightTable is a different issue since it is fully CLJS and electron based. I have dug into the code a fair amount, but it is simply [too complicated at this point for me to add to it][4].  Atom appears to [support cards][18], but some of the other features below would be difficult to impossible to implement. I’m not aware of any limitations around cards in vs code, but it is a bit more locked down than atom and I can’t see more functionality being implemented. 
 
-This is also a skill-building tool. I want to explore Fulcro (after research now [Ful-Frame][32]), Pluggable architectures, and management of an OSS project. 
+This is also a skill-building tool. I want to explore Fulcro, Pluggable architectures, and management of an OSS project. 
 
 ## Achievability 
 
-I outline a ton of functionality below that will take a lot of work - quite possibly more work than I could put in myself. Naturally, that means if it is to be completed help is required. I am researching quite a bit about plugin architectures that I could use. The plan is to create a minimal core that includes critical functionality - keyboard routing, frameworks for managing cards, window state, modals, etc. Every other bit of functionality will be a plugin - including all cards. Hopefully, I can design a system of plugins with extension points - i.e. the ability to add plugins to plugins. This would allow for instance cards that are used to open Clojure code to have the editor type exchanged from plain text to an AST one while using largely the same mechanics. I don't think I can design a system that is pluggable in every facet. Some functionality will need to remain baked in. ***Any ideas around this would be greatly appreciated!***
+I outline a ton of functionality below that will take a lot of work - quite possibly more work than I could put in myself. Naturally, that means if it is to be completed help is required. I am researching quite a bit about plugin architectures that I could use. The plan is to create a minimal core that includes critical functionality - keyboard routing, frameworks for managing layouts, window state, modals, etc. Every other bit of functionality will be a plugin.
+
+I expect to have multiple editor types, which may get tricky. A plain text editor is essential, but I'm super interested in ast style editors as well. With some careful thought, it should be possible to create editors to be exchangeable. Completion, navigation, paredit, etc. may be pluggable as well. 
+
+***Any ideas around this would be greatly appreciated!***
 
 ## Contributing
 
@@ -33,7 +37,7 @@ For now, I'm not interested in code contributions. Unless this project takes off
 
 #### Keybindings with discoverability
 
-Vim and spacemacs are the inspiration here. Every key, even single keystrokes, should pass through a multi-mode keybinding setup. The whole setup should function somewhat like a finite state machine, where keybindings have the option of switching the mode. It will be similar to vim’s insert/edit/replace, or the displays at the bottom of spacemacs. One key should be reserved to show all current keybindings. The mode should be shown globally. I'm still debating some of the semantics of this feature.
+Vim and spacemacs are the inspiration here. Every key, even single keystrokes, should pass through a multi-mode keybinding system. The entire editor should function somewhat like a finite state machine, where keybindings have the option of switching the mode. It will be similar to vim’s insert/edit/replace, or the displays at the bottom of spacemacs. One key should be reserved to show all current keybindings. The mode should be shown globally. I'm still debating some of the semantics of this feature.
 
 #### [Cards (Code Bubbles)][5]
 
@@ -47,11 +51,12 @@ Problems also arise - primarily around layout generation. The simplest would be 
 - Related function mode where all call sites of a function are identified and shown nearby in the workspace
 - Repl mode where arbitrary code can be pulled up around a running repl. Useful for integration tests?
 - Not an entire card, but a way to pull tests out of the repl. I.e. a keycommand that says the current visible output is correct and go store the command with its output. 
-- Literate programming files - designed for what I call integration files. Integration files are a namespace with lots of commented code that demonstrates how to flow through a namespace and how the functions can interact. Can integrate some of the same outputs as Proto REPL.
+- Literate programming files - designed for what I call integration files. Integration files are a namespace with comment blocks that demonstrates how to flow through a namespace and how the functions can interact. Can integrate some of the same outputs as Proto REPL.
+ 
 
 #### Excellent navigation
 
-Not much to say here - this is a must for large codebases. This flows from the workspace concept above, but navigation should have the option to kick off workspace restructuring.
+Not much to say here - this is a must for large codebases. This flows from the workspace concept above, but navigation should have the option to kick off workspace restructuring. e.g. the "navigation" of showing tests could move test blocks to the right of the code under test. 
 
 #### Editors
 
@@ -82,6 +87,22 @@ This is core to the editor, allowing the development of the various corners to h
 - [Plugins in IntelliJ][28]
 - [Plugins in VSCode][29] 
 - [Plugins in Atom][30]
+
+### Eratta
+
+Data structure exploration - use something like mali's spec fitting to create minimal trees that describe some evaluated data. Maybe add keybindings to cycle the spec thats showing. 
+e.g. 
+
+```
+{keyword? map?}
+
+cycle to ->
+
+{:a  {:title string?}
+ :b  {:role keyword?}}
+```
+
+Not exactly sure how this would work, but could be useful for exploring large data structures.
 
 
 ## General Research links
