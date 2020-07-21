@@ -60,8 +60,7 @@ Not much to say here - this is a must for large codebases. This flows from the w
 
 #### Editors
 
-The default method for code editing is raw text manipulation. Paredit and Parinfer bend the rules quite a bit, but most of the time you end up pushing your cursor around manually without using the AST. Things like lispy-ace-symbol would be awesome.
-
+The default interaction code editing for decades has been raw text manipulation. Paredit and Parinfer bend the rules quite a bit, but most of the time you end up pushing your cursor around manually without using the metadata of the AST. Things like lispy-ace-symbol would be awesome.
 
 Editors should be pluggable and selectable by the user. Any mode combination of bare text + Vim, paredit or parinfer should be usable, as well as an AST editor.
 
