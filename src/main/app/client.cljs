@@ -2,9 +2,9 @@
   (:require
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
-    [com.fulcrologic.fulcro.dom :as dom]))
+    [com.fulcrologic.fulcro.dom :as dom]
+    [app.SPA :refer [SPA]]))
 
-(defonce app (app/fulcro-app))
 
 (defsc Root [this props]
   (dom/div "TODO"))
@@ -19,5 +19,5 @@
   "During development, shadow-cljs will call this on every hot reload of source. See shadow-cljs.edn"
   []
   ;; re-mounting will cause forced UI refresh, update internals, etc.
-  (app/mount! app Root "app")
+  (app/mount! SPA Root "app")
   (js/console.log "Hot reload"))

@@ -1,9 +1,21 @@
 {:deps     {:aliases [:dev]}
  :dev-http {8000 "classpath:public"}
- :builds   {:main {:target     :browser
-                   :output-dir "resources/public/js/main"
-                   :asset-path "/js/main"
-                   :modules    {:main {:init-fn app.client/init
-                                       :entries [app.client]}}
-                   :devtools   {:after-load app.client/refresh
-                                :preloads   [com.fulcrologic.fulcro.inspect.preload]}}}}
+ :nrepl    {:port 9000}
+ :builds   {:main       {:target     :browser
+                         :output-dir "resources/public/js/main"
+                         :asset-path "/js/main"
+                         :modules    {:main {:init-fn app.client/init
+                                             :entries [app.client]}}
+                         :devtools   {:after-load app.client/refresh
+                                      :preloads   [com.fulcrologic.fulcro.inspect.preload]}}
+
+            #_#_:workspaces {:target     nubank.workspaces.shadow-cljs.target
+                         :ns-regexp  "-(test|ws)$"
+                         :output-dir "resources/public/workspaces/js"
+                         :asset-path "/js/workspaces"
+                         ;:preloads   [com.fulcrologic.fulcro.inspect.preload]
+                         :devtools   {:preloads           [com.fulcrologic.fulcro.inspect.preload]
+                                      :http-root          "resources/public/workspaces"
+                                      :http-port          8023
+                                      :http-resource-root "."}}}
+ }
