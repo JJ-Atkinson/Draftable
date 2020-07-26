@@ -3,16 +3,18 @@
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom :as dom]
-    [app.SPA :refer [SPA]]))
+    [app.SPA :refer [SPA]]
+    [fisher.plugins.editor1.editor1-root :as e1r]))
 
 
 (defsc Root [this props]
-  (dom/div "TODO"))
+  (dom/div "TODO"
+    ))
 
 (defn ^:export init
   "Shadow-cljs sets this up to be our entry-point function. See shadow-cljs.edn `:init-fn` in the modules of the main build."
   []
-  (app/mount! app Root "app")
+  (app/mount! SPA Root "app")
   (js/console.log "Loaded"))
 
 (defn ^:export refresh

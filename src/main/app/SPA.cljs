@@ -4,15 +4,14 @@
             [com.fulcrologic.fulcro.networking.file-upload :as file-upload]
             [com.fulcrologic.fulcro.application :as app]
             [com.fulcrologic.fulcro.components :as comp]
-            [jra.ui.pages :as pages]
             [taoensso.timbre :as log]
-            [com.fulcrologic.fulcro.rendering.keyframe-render2 :as k2r]
+            [com.fulcrologic.fulcro.rendering.multiple-roots-renderer :as mroot]
             ))
 
 
 (defonce SPA
   (app/fulcro-app
-    {:optimized-render!    k2r/render!
+    {:optimized-render!    mroot/render!
      #_#_:remotes              {:remote (net/fulcro-http-remote {:url                "/api/datomic"
                                                              :request-middleware secured-request-middleware})}
      :client-did-mount     (fn [app]
