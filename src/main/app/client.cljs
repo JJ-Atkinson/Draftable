@@ -8,7 +8,9 @@
 
 
 (defsc Root [this props]
-  (dom/div "TODO"
+  (dom/div "TODO2"
+    (e1r/ui-editor-1-root {:editor/ident [:editor/id 1]})
+    (e1r/ui-editor-1-root {:editor/ident [:editor/id 4] :react-key 8})
     ))
 
 (defn ^:export init
