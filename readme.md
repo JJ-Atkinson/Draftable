@@ -35,6 +35,10 @@ For now, I'm not interested in code contributions. Unless this project takes off
 
 ## Functionality Desired
 
+#### [\*Crazy ;)]  OS and Language rolled into one
+
+This is the overarching idea behind what I want. Inspired by [Pharo][38] and [GToolkit][39], the core of Fisher should be a massively extensible core, designed explictly to host extensions that are designed for each project. 
+
 #### Keybindings with discoverability
 
 Vim and spacemacs are the inspiration here. Every key, even single keystrokes, should pass through a multi-mode keybinding system. The entire editor should function somewhat like a finite state machine, where keybindings have the option of switching the mode. It will be similar to vim’s insert/edit/replace, or the displays at the bottom of spacemacs. One key should be reserved to show all current keybindings. The mode should be shown globally. I'm still debating some of the semantics of this feature.
@@ -157,4 +161,6 @@ Thanks to @jlmr in slack for mentioning his name of cards - much easier to say t
 [35]: https://reactjsexample.com/a-hierarchical-object-tree-component-for-react/
 [36]: https://github.com/chenglou/react-treeview
 [37]: https://github.com/weavejester/integrant
+[38]: https://pharo.org
+[39]: https://gtoolkit.com
 
