@@ -14,11 +14,11 @@
            better-cond                    {:mvn/version "2.1.0"}
            meander/epsilon                {:mvn/version "0.0.469"}
            dev.freeformsoftware/metacomet {:git/url "https://github.com/JJ-Atkinson/metacomet.git"
-                                           :sha     "f738fc49092bbd39c14904d7b60f03110d875a6b"}}
+                                           :sha     "b1212c92a515660ffb3ba5bc5bb1095895e874e0"}}
 
  :aliases {:dev {:extra-paths ["src/dev" "src/test" "src/workspaces"]
                  :extra-deps  {binaryage/devtools                  {:mvn/version "1.0.2"}
 
-                               thheller/shadow-cljs                {:mvn/version "2.10.17"}
+                               thheller/shadow-cljs                {:mvn/version "2.11.5"}
                                com.fulcrologic/semantic-ui-wrapper {:mvn/version "1.0.0"}
                                com.github.awkay/workspaces         {:mvn/version "1.0.1" :scope "provided"}}}}}
