@@ -14,7 +14,11 @@
            better-cond                    {:mvn/version "2.1.0"}
            meander/epsilon                {:mvn/version "0.0.469"}
            dev.freeformsoftware/metacomet {:git/url "https://github.com/JJ-Atkinson/metacomet.git"
-                                           :sha     "f738fc49092bbd39c14904d7b60f03110d875a6b"}}
+                                           :sha     "f738fc49092bbd39c14904d7b60f03110d875a6b"}
+           rewrite-clj                    {:mvn/version "0.6.1"}
+           rewrite-cljs                   {:mvn/version "0.4.5"}
+
+           }
 
  :aliases {:dev {:extra-paths ["src/dev" "src/test" "src/workspaces"]
                  :extra-deps  {binaryage/devtools                  {:mvn/version "1.0.2"}

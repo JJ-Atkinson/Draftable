@@ -1,0 +1,47 @@
+body {
+    font-family: "Fira Code", "Ubuntu Mono", monospace;
+}
+
+.d-expr {
+    background-color: rgba(90, 90, 90, 0.12);
+    padding: 4px 7px 4px 4px;
+    
+}
+
+
+
+.d-list, .d-vec, .d-map {
+    display: flex;
+    border-right: 1px solid rgba(20, 20, 20, 0.39);
+}
+
+.d-list.wrap-down > .d-content, .d-vec.wrap-down > .d-content, .d-map.wrap-down > .d-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.d-list.no-wrap > .d-content, .d-vec.no-wrap > .d-content, .d-map.no-wrap > .d-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.no-wrap > .d-content > *:not(:first-child) {
+    margin-left: 4px;
+}
+
+.d-element.list-head, .d-element.vec-head {
+    margin-right: 3px;
+}
+
+.d-element.vec-head {
+    color: blue;
+}
+
+.d-element.list-head {
+    color: red;
+}
+
+.d-element.map-head {
+    color: green;
+}
+
