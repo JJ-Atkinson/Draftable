@@ -1,6 +1,6 @@
 {:deps     {:aliases [:dev]}
  :dev-http {8000 "classpath:public"}
- :nrepl    {:port 9000}
+ :nrepl    {:port 9001}
  :builds   {:main       {:target     :browser
                          :output-dir "resources/public/js/main"
                          :asset-path "/js/main"
