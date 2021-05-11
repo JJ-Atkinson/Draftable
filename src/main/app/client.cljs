@@ -90,6 +90,9 @@
     (js/console.log cm-inst)
     ;(use-lifecycle nil #(when cm-inst (j/call cm-inst :destroy)))
 
+    ;; I hear it is possible to do update listeners!
+    ;; https://codemirror.net/6/docs/ref/#view.EditorView%5EupdateListener
+    ;; ViewUpdate contains an EditorState which has a toString function
     (dom/div 
       (dom/div {:classes ["rounded-md mb-0 text-sm monospace overflow-auto relative border shadow-lg bg-white"]
                 :ref     #(when-not cm-inst (cm-inst! (mount-cm % code nil)))
