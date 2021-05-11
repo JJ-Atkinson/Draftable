@@ -1,11 +1,14 @@
 {:paths   ["src/main" "resources"]
- :deps    {org.clojure/clojure            {:mvn/version "1.10.1"}
-           org.clojure/clojurescript      {:mvn/version "1.10.773"}
-           com.fulcrologic/fulcro         {:mvn/version "3.2.12"}
+ :deps    {org.clojure/clojure            {:mvn/version "1.10.3"}
+           org.clojure/clojurescript      {:mvn/version "1.10.844"}
+           
+           com.fulcrologic/fulcro         {:mvn/version "3.4.21"}
 
            org.clojure/tools.analyzer     #:mvn{:version "1.0.0"},
+           nextjournal.clojure-mode {:git/url "https://github.com/nextjournal/clojure-mode"
+                                     :sha "11a48c90bd1e17916c9aa9afcb2b25477ecfeb83"}
 
-           com.fulcrologic/guardrails     {:mvn/version "0.0.12" :scope "provided"}
+           com.fulcrologic/guardrails     {:mvn/version "1.1.4"}
            com.taoensso/encore            {:mvn/version "2.117.0"}
            com.taoensso/timbre            {:mvn/version "4.10.0"
                                            :exclusions  [org.clojure/tools.reader]}
@@ -13,12 +16,13 @@
            medley                         {:mvn/version "1.3.0"}
            better-cond                    {:mvn/version "2.1.0"}
            meander/epsilon                {:mvn/version "0.0.469"}
+           paren-soup                     {:mvn/version "2.16.2"}
            dev.freeformsoftware/metacomet {:git/url "https://github.com/JJ-Atkinson/metacomet.git"
                                            :sha     "f738fc49092bbd39c14904d7b60f03110d875a6b"}}
 
  :aliases {:dev {:extra-paths ["src/dev" "src/test" "src/workspaces"]
                  :extra-deps  {binaryage/devtools                  {:mvn/version "1.0.2"}
 
-                               thheller/shadow-cljs                {:mvn/version "2.10.17"}
+                               thheller/shadow-cljs                {:mvn/version "2.12.6"}
                                com.fulcrologic/semantic-ui-wrapper {:mvn/version "1.0.0"}
                                com.github.awkay/workspaces         {:mvn/version "1.0.1" :scope "provided"}}}}}
