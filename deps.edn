@@ -15,18 +15,26 @@
            com.taoensso/encore            {:mvn/version "2.117.0"}
            com.taoensso/timbre            {:mvn/version "4.10.0"
                                            :exclusions  [org.clojure/tools.reader]}
-           com.wsscode/pathom             {:mvn/version "2.2.28"}
            medley                         {:mvn/version "1.3.0"}
            better-cond                    {:mvn/version "2.1.0"}
            meander/epsilon                {:mvn/version "0.0.469"}
-           paren-soup                     {:mvn/version "2.16.2"}
            zprint/zprint                  {:mvn/version "0.5.3"}
            dev.freeformsoftware/metacomet {:git/url "https://github.com/JJ-Atkinson/metacomet.git"
-                                           :sha     "f738fc49092bbd39c14904d7b60f03110d875a6b"}}
+                                           :sha     "f738fc49092bbd39c14904d7b60f03110d875a6b"}
+
+           com.wsscode/pathom             {:mvn/version "2.2.28"}
+           hiccup/hiccup                  {:mvn/version "1.0.5"}
+           http-kit/http-kit              {:mvn/version "2.5.0"}
+           mount/mount                    {:mvn/version "0.1.16"}
+           org.clojure/core.async         {:mvn/version "1.3.610"}
+           ring/ring-core                 {:mvn/version "1.8.1"}
+           ring/ring-defaults             {:mvn/version "0.3.2"}
+           }
 
  :aliases {:dev {:extra-paths ["src/dev" "src/test" "src/workspaces"]
                  :extra-deps  {binaryage/devtools                  {:mvn/version "1.0.2"}
 
                                thheller/shadow-cljs                {:mvn/version "2.12.6"}
                                com.fulcrologic/semantic-ui-wrapper {:mvn/version "1.0.0"}
-                               com.github.awkay/workspaces         {:mvn/version "1.0.1" :scope "provided"}}}}}
+                               com.github.awkay/workspaces         {:mvn/version "1.0.1" :scope "provided"}
+                               org.clojure/tools.namespace         {:mvn/version "1.0.0"}}}}}
