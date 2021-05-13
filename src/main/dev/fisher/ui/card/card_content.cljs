@@ -59,7 +59,7 @@
   
 
   (comp/transact! SPA [(dev.fisher.ui.card.card/set-card-content
-                         {:id            :cardid
+                         {:id            1
                           :clazz         DifferentCard
                           :initial-state {:back-count 22}})])
   )

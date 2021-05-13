@@ -26,7 +26,13 @@
   (dom/div :.root
     (dom/div
       (map cmc/ui-code-mirror codemirror))
-    (card/ui-content-root {::card/id :cardid})))
+    (card/ui-content-root {::card/id :cardid})
+    (card/ui-content-root {::card/id 1})
+    (card/ui-content-root {::card/id 5})
+    
+    
+    
+    ))
 
 
 (defn ^:export init
