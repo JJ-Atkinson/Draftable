@@ -1,5 +1,6 @@
 (ns app.client
   (:require
+    [app.log-config]
     [com.fulcrologic.fulcro.application :as app]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.mutations :as mut]
@@ -11,7 +12,6 @@
     [dev.fisher.ui.editor.codemirror-core :as cmc]
 
     [dev.fisher.ui.card.card :as card]
-    [app.log-config]
     ))
 
 

@@ -14,43 +14,49 @@
     [zprint.core :as zp]))
 
 
-(def card-root-factory-registry
-  "Atom of ::id -> (factory Card {:qualifier ...})"
+(defonce card-root-factory-registry
+  ;"Atom of ::id -> (factory Card {:qualifier ...})"
   (atom {}))
 
 (comment
-
-  (= (second (get @card-root-factory-registry :cardid)) (first (get @card-root-factory-registry :cardid)))
 
   (comp/set-query! SPA (get @card-root-factory-registry :cardid)
     {:query [::id
              ::sub-renderer
              {::backing-data (comp/get-query card-content/RandomCard)}]})
+
   (comp/get-query (get @card-root-factory-registry :cardid)
     (com.fulcrologic.fulcro.application/current-state SPA)))
 
 (defmutation set-card-content [{:keys [id clazz initial-state]}]
-  (action [{:keys [state]}]
+  (action [{:keys [state app]}]
     (let [factory (comp/factory clazz)]
       (swap!-> state
         (assoc-in [::id id ::sub-renderer] factory)
-        (comp/set-query* (first (get @card-root-factory-registry id))
-          (log/spy :info :thing [::id
-                                 ::sub-renderer
-                                 {::backing-data (comp/get-query clazz)}]))
+        #_(comp/set-query* (get @card-root-factory-registry id)
+            {:query (log/spy :info :thing [::id
+                                           ::sub-renderer
+                                           {::backing-data (comp/get-query clazz)}])})
         (merge/merge-component clazz (assoc initial-state
-                                       card-content/content-ident-key id))))))
+                                       card-content/content-ident-key id)))
+
+      ;; using the ! version because it has the indexing information built in
+      (comp/set-query! app (get @card-root-factory-registry id)
+        {:query (log/spy :info :thing [::id
+                                       ::sub-renderer
+                                       {::backing-data (comp/get-query clazz)}])}))))
 
 
 (defsc Card [this {::keys [id backing-data sub-renderer] :as props}]
-  {:query         [::id
-                   ::sub-renderer
-                   {::backing-data [card-content/content-ident-key]}]
-   :ident         ::id
+  {:query                   [::id
+                             ::sub-renderer
+                             {::backing-data [card-content/content-ident-key]}]
+   :ident                   ::id
    ;; both this and the card content share the same id -- different tables though
-   :initial-state (fn [{:keys [id]}]
-                    {::id           id
-                     ::backing-data {card-content/content-ident-key id}})}
+   :initial-state           (fn [{:keys [id]}]
+                              {::id           id
+                               ::backing-data {card-content/content-ident-key id}})
+   :preserve-dynamic-query? true}
   (if sub-renderer
     (dom/div "need more space"
       (dom/br)
@@ -60,7 +66,7 @@
       (dom/br)
       "query"
       (dom/br)
-      (dom/pre (with-out-str (zp/zprint (comp/get-query (first (get @card-root-factory-registry id))
+      (dom/pre (with-out-str (zp/zprint (comp/get-query (get @card-root-factory-registry id)
                                           (com.fulcrologic.fulcro.application/current-state this)))))
       (sub-renderer backing-data))
     (dom/div {:style {:color "red"}}
@@ -99,7 +105,6 @@
         content))
     ))
 
-(def ui-content-root (let [global-factory (mrr/floating-root-factory ContentRoot)]
-                       (fn [computed-props]
-                         (global-factory (assoc computed-props :react-key
-                                                               (::id computed-props))))))
+(def ui-content-root (let [global-factory (comp/computed-factory ContentRoot {:key-fn ::id})]
+                       (fn [props]
+                         (global-factory props props))))

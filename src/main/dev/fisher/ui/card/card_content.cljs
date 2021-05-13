@@ -51,6 +51,7 @@
                          {:id            :cardid
                           :clazz         RandomCard
                           :initial-state {:count-random 45}})])
+  
 
   (comp/transact! SPA [(dev.fisher.ui.card.card/set-card-content
                          {:id            :cardid
