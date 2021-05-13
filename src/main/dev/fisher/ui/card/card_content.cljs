@@ -18,6 +18,11 @@
   ::id)
 
 
+(defsc BlankCard [this props]
+  {:query [::id]
+   :ident ::id}
+  nil)
+
 
 (defsc RandomCard [this {::keys [id]
                          :keys  [count-random]

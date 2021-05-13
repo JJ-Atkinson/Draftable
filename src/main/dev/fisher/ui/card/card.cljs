@@ -1,5 +1,6 @@
 (ns dev.fisher.ui.card.card
   (:require
+    [goog.object :as gobj]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom :as dom]
     [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
@@ -11,7 +12,8 @@
     [com.fulcrologic.fulcro.algorithms.merge :as merge]
     [dev.fisher.ui.card.card-content :as card-content]
     [taoensso.timbre :as log]
-    [zprint.core :as zp]))
+    [zprint.core :as zp]
+    [com.fulcrologic.fulcro.algorithms.denormalize :as fdn]))
 
 
 (defonce card-root-factory-registry
@@ -50,7 +52,7 @@
 (defsc Card [this {::keys [id backing-data sub-renderer] :as props}]
   {:query                   [::id
                              ::sub-renderer
-                             {::backing-data [card-content/content-ident-key]}]
+                             {::backing-data (comp/get-query card-content/BlankCard)}]
    :ident                   ::id
    ;; both this and the card content share the same id -- different tables though
    :initial-state           (fn [{:keys [id]}]
@@ -86,7 +88,7 @@
         [original-id _] (hooks/use-state id)
         [Card-factory factory] (*floating-root/use-fulcro-mount this {:initial-state-params {:id id}
                                                                       :child-class          Card})
-        _  (swap! card-root-factory-registry update original-id conj Card-factory)
+        _  (swap! card-root-factory-registry assoc original-id Card-factory)
 
         content #_(dom/div
                     (dom/h4 "Content Root")
@@ -96,7 +98,9 @@
                       (factory props)))
            (when factory
              (factory props))]
-    (js/console.log "ID" (pr-str [id original-id]) "Printing PROPS" (pr-str props))
+    (when factory
+      (log/info :top-query (comp/get-query factory (com.fulcrologic.fulcro.application/current-state this))))
+    (log/info :top-props props)
 
     (if (= original-id id)
       content
@@ -108,3 +112,17 @@
 (def ui-content-root (let [global-factory (comp/computed-factory ContentRoot {:key-fn ::id})]
                        (fn [props]
                          (global-factory props props))))
+
+
+
+(fdn/db->tree [#:com.fulcrologic.fulcro.floating-root{:generated-root1
+                                                      [::id
+                                                       ::sub-renderer
+                                                       {::backing-data
+                                                        [:dev.fisher.ui.card.card-content/id
+                                                         :count-random]}]}]
+  (com.fulcrologic.fulcro.application/current-state SPA)
+  (com.fulcrologic.fulcro.application/current-state SPA))
+
+(zp/zprint (com.fulcrologic.fulcro.application/current-state SPA))
+(comp/get-query Card)
