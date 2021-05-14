@@ -23,7 +23,7 @@
         (fn [tx] (parser {:ring/request request} tx)))
       (handler request))))
 
-(defn index [csrf-token]
+(defn index []
   (log/debug "Serving index.html")
   (html5
     [:html {:lang "en"}
@@ -33,17 +33,16 @@
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"}]
       [:link {:href "https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
               :rel  "stylesheet"}]
-      [:link {:rel "shortcut icon" :href "data:image/x-icon;," :type "image/x-icon"}]
-      [:script (str "var fulcro_network_csrf_token = '" csrf-token "';")]]
+      [:link {:rel "shortcut icon" :href "data:image/x-icon;," :type "image/x-icon"}]]
      [:body
       [:div#app]
       [:script {:src "js/main/main.js"}]]]))
 
 (defn wrap-html-routes [ring-handler]
-  (fn [{:keys [uri anti-forgery-token] :as req}]
+  (fn [{:keys [uri] :as req}]
     (cond
       (#{"/" "/index.html"} uri)
-      (-> (resp/response (index anti-forgery-token))
+      (-> (resp/response (index))
         (resp/content-type "text/html"))
       :else
       (ring-handler req))))

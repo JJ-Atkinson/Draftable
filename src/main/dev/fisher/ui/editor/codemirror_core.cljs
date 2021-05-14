@@ -28,6 +28,7 @@
     [nextjournal.clojure-mode.node :as n]
     [nextjournal.clojure-mode.selections :as sel]
     [nextjournal.clojure-mode.test-utils :as test-utils]
+    [com.fulcrologic.fulcro.data-fetch :as df]
     [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]))
 
 (def theme
@@ -61,7 +62,7 @@
       (.of view/keymap cm-clj/complete-keymap)
       (.of view/keymap historyKeymap)
 
-      ;; onchange-handler receives https://codemirror.net/6/docs/ref/#view.ViewUpdate 
+      ;; onchange-handler receives https://codemirror.net/6/docs/ref/#view.ViewUpdate
       (-> EditorView .-updateListener (.of onchange-handler))])
 
 
@@ -91,34 +92,52 @@
 
 (defmutation update-text-object [{:as props ::keys [id doc-object]}]
   (action [{:keys [state app]}]
+    (js/console.log "doc-object" doc-object)
     (swap! state assoc-in [::id id ::doc-object] doc-object)))
 
-(defn text-of* 
-  "Read out the current text from a mounted code mirror. This will convert the ropes to a string, 
+(defn text-of*
+  "Read out the current text from a mounted code mirror. This will convert the ropes to a string,
    so use sparingly."
   [state id]
   (.toString (get-in state [::id id ::doc-object])))
 
+(defmutation save-text [{:as params ::keys [id]}]
+  (remote [{:as env :keys [state]}]
+    (-> env
+      (m/with-server-side-mutation 'server.api.editor/save-text)
+      (m/with-params {:file (::source-file params)
+                      :text (text-of* @state id)}))))
+
 (defsc CodeMirror [this props]
   {:query                [::id                ;; id
+                          ::source-file       ;; path from which the code comes from
                           ::initial-code      ;; string of the code to populate the editor with, only used on first render
                           ::doc-object]       ;; the codemirror document, updated on state change https://codemirror.net/6/docs/ref/#text.Text
    :initial-state        {::id           :param/id
-                          ::initial-code :param/initial-code}
+                          ::source-file  :param/source-file
+                          ::initial-code ";; PLACEHOLDER"}
    :ident                ::id
    :initLocalState       (fn [this {::keys [initial-code id]}]
                            {:save-ref (fn [ref]
                                         (when-not (gobj/get this "cm-inst")
-                                          (gobj/set this "cm-inst" (-mount-cm ref initial-code
-                                                                     #(comp/transact! this [(update-text-object
-                                                                                              {::id         id
-                                                                                               ::doc-object (-doc-of %)})]
-                                                                        )))))})
+                                          (gobj/set this "cm-inst"
+                                            (-mount-cm ref initial-code
+                                              #(comp/transact! this [(update-text-object {::id id ::doc-object (-doc-of %)})])))))})
    :componentWillUnmount (fn [this]
                            (j/call (gobj/get this "cm-inst") :destroy))}
   (dom/div
-    (dom/div {:classes ["rounded-md mb-0 text-sm monospace overflow-auto relative border shadow-lg bg-white"]
-              :ref     (comp/get-state this :save-ref)
-              :style   {:maxHeight 400}})))
+    (dom/input {:onChange #(m/set-string!! this ::source-file :event %)
+                :value (::source-file props)})
+    (dom/button {:onClick #(df/load! this :text nil
+                             {:params {:file (::source-file props)}
+                              ;; TASK: update text object ???
+                              })}
+      "LOAD FROM DISK")
+    (dom/button {:onClick #(comp/transact! this [(save-text props)])}
+      (str "SAVE-" (::id props)))
+    (dom/div
+      (dom/div {:classes ["rounded-md mb-0 text-sm monospace overflow-auto relative border shadow-lg bg-white"]
+                :ref     (comp/get-state this :save-ref)
+                :style   {:maxHeight 400}}))))
 
 (def ui-code-mirror (comp/factory CodeMirror {:keyfn ::id}))

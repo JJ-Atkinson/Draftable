@@ -1,23 +1,17 @@
 (ns dev.fisher.ui.card.impl-fulcro-floating-root
-  #?(:cljs
-     (:require-macros [com.fulcrologic.fulcro.react.hooks :refer [use-effect use-lifecycle]]))
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; WARNING TO MAINTAINERS: DO NOT REFERENCE DOM IN HERE. This has to work with native.
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (:require-macros [com.fulcrologic.fulcro.react.hooks :refer [use-effect use-lifecycle]])
   (:require
     [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
-    #?@(:cljs
-        [[goog.object :as gobj]
-         cljsjs.react])
+    [goog.object :as gobj]
+    cljsjs.react
     [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.fulcro.rendering.multiple-roots-renderer :as mrr]
     [com.fulcrologic.fulcro.react.hooks :refer [useState use-state]]
-    [taoensso.timbre :as log])
-  #?(:clj (:import (cljs.tagged_literals JSValue))))
+    [taoensso.timbre :as log]))
 
 (let [initial-mount-state (fn []
                             (let [componentName (keyword "com.fulcrologic.fulcro.floating-root" (gensym "generated-root"))]
-                              #?(:clj [componentName nil] :cljs #js [componentName nil])))]
+                              #js [componentName nil]))]
   (defn use-fulcro-mount
     "
     Generate a new sub-root that is controlled and rendered by Fulcro's multi-root-renderer.
@@ -72,7 +66,7 @@
                                                        (meta real-factory))]
                                    (println "setting child factory now!")
                                    (setChildFactory! child-factory)
-                                   (setRoot! #?(:clj [join-key factory] :cljs #js [join-key factory]))))
+                                   (setRoot! #js [join-key factory])))
                                (fn teardown* []
                                  (let [join-key (aget key-and-root 0)
                                        state    (-> parent-this comp/any->app :com.fulcrologic.fulcro.application/state-atom)]

@@ -11,8 +11,7 @@
 (defonce SPA
   (app/fulcro-app
     {:optimized-render! mrr/render!
-     #_#_:remotes {:remote (net/fulcro-http-remote {:url                "/api/datomic"
-                                                    :request-middleware secured-request-middleware})}
+     :remotes {:remote (net/fulcro-http-remote {:url "/api"})}
      :client-did-mount  (fn [app]
                           (log/merge-config! {:output-fn prefix-output-fn
                                               :appenders {:console (console-appender)}})

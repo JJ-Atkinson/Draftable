@@ -15,11 +15,9 @@
     [zprint.core :as zp]
     [com.fulcrologic.fulcro.algorithms.denormalize :as fdn]))
 
-
 (defonce card-root-factory-registry
   ;"Atom of ::id -> (factory Card {:qualifier ...})"
   (atom {}))
-
 
 (defmutation set-card-content [{:keys [id clazz initial-state]}]
   (action [{:keys [state app]}]
@@ -34,7 +32,6 @@
         {:query [::id
                  ::sub-renderer
                  {::backing-data (comp/get-query clazz)}]}))))
-
 
 (defsc Card [this {::keys [id backing-data sub-renderer] :as props
                    :or {backing-data card-content/BlankCard}}]
