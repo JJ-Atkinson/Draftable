@@ -33,16 +33,6 @@
           (merge/merge-component clazz (assoc initial-state
                                          card-content/content-ident-key id)))
 
-        ;; if the card-contents are mounted *before
-
-        ;; sub-renderer is the signal to Card that it should render *now*. Since some
-        ;; card-contents (sub-renderers) require that all data be available on first render,
-        ;; they require that the query *must* be set before they render. since the query of Card
-        ;; can only be updated after its first render, the flow must be like so:
-        ;; 1.  CardRoot render 
-        ;;      -> publishes factory for set-query!
-        ;; 1a.  Card render (card-content not rendered, since query is still default)
-        ;; 1b.  Card recognizes that default-card-clazz is set, but the query is not
         ;; using the ! version because it has the indexing information built in
         (if-let [class-query-factory (get @card-root-factory-registry id)]
           (comp/set-query! app class-query-factory
