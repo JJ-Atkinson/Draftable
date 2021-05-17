@@ -9,7 +9,7 @@
 
 <br/>
 
-***Status:*** Underway, starting to rough out the plugin system based on Integrent. 
+***Status:*** Demo underway, roughing out UI design & core functionality. Some of the details below still hold, but this document will only be updated when the demo is complete because I don't want to change it 50+ times for every feature idea/change :). 
 
 ## Why?
 
