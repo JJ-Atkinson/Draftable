@@ -28,8 +28,8 @@
     [nextjournal.clojure-mode.node :as n]
     [nextjournal.clojure-mode.selections :as sel]
     [nextjournal.clojure-mode.test-utils :as test-utils]
-    [com.fulcrologic.fulcro.data-fetch :as df]
-    [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]))
+    [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
+    [taoensso.timbre :as log]))
 
 (def theme
   "Default CM css theme (per component)"
@@ -62,7 +62,7 @@
       (.of view/keymap cm-clj/complete-keymap)
       (.of view/keymap historyKeymap)
 
-      ;; onchange-handler receives https://codemirror.net/6/docs/ref/#view.ViewUpdate
+      ;; onchange-handler receives https://codemirror.net/6/docs/ref/#view.ViewUpdate 
       (-> EditorView .-updateListener (.of onchange-handler))])
 
 
