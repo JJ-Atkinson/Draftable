@@ -12,22 +12,37 @@
     [dev.fisher.ui.editor.codemirror-core :as cmc]
 
     [dev.fisher.ui.card.card :as card]
+    [dev.fisher.data-model.card-data :as card-data]
+    [dev.fisher.ui.card.card-content :as card-content]
+    [dev.fisher.ui.workspaces.workspace-manager :as wsm]
+    [dev.fisher.ui.cards.code :as code-card]
     ))
 
-
-(defn cmc-is [x] (comp/get-initial-state cmc/CodeMirror x))
 
 (defsc Root [this
-             {:keys [codemirror] :as props}]
-  {:query         [{:codemirror (comp/get-query cmc/CodeMirror)}]
-   :initial-state {:codemirror [{:id 1 :source-file "/foo-1"}]}}
+             {:keys [codemirror wsmanager] :as props}]
+  {:query         [{:codemirror (comp/get-query cmc/CodeMirror)}
+                   {:wsmanager (comp/get-query wsm/WSManager)}]
+   :initial-state {:codemirror [{:id 1 :initial-code ";; I'm number 1"}
+                                {:id 2 :initial-code ";; I'm number 2 "}]
+                   :wsmanager  {:id :wsmanager}}}
   (dom/div :.root
-    (dom/div
-      (map cmc/ui-code-mirror codemirror))
-    (card/ui-content-root {::card/id :cardid})
-    (card/ui-content-root {::card/id 1})
-    (card/ui-content-root {::card/id 5})
-    ))
+    (wsm/ui-wsmanager wsmanager)))
+
+(comment
+  (let [cardid   :code-contents1
+        code     ";; I AM Z CODE"
+        carddata {::card-data/code  code
+                  ::card-content/id cardid}]
+    (comp/transact! SPA
+      [(card/set-card-content {:id            cardid
+                               :clazz         code-card/CodeCard
+                               :initial-state (comp/get-initial-state code-card/CodeCard carddata)})
+       (wsm/add-card {:wsm-id :wsmanager :cardid cardid})])))
+
+
+
+
 
 (defn ^:export init
   "Shadow-cljs sets this up to be our entry-point function. See shadow-cljs.edn `:init-fn` in the modules of the main build."
