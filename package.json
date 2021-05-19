@@ -29,6 +29,7 @@
     "@codemirror/search": "0.17.1",
     "@codemirror/state": "0.17.2",
     "@codemirror/view": "0.17.13",
+    "@fluentui/react": "^8.14.10",
     "highlight.js": "9.18.1",
     "lezer-clojure": "0.1.10",
     "lezer-generator": "^0.13.3",

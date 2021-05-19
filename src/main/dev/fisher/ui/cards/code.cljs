@@ -1,15 +1,10 @@
 (ns dev.fisher.ui.cards.code
   (:require
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
-    [com.fulcrologic.fulcro.dom :as dom]
-    [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
-    [com.fulcrologic.fulcro.algorithms.normalized-state :as fns :refer [swap!->]]
-    [com.fulcrologic.fulcro.algorithms.merge :as merge]
     [dev.fisher.ui.card.card-content :as card-content]
-    [taoensso.timbre :as log]
-    [com.fulcrologic.fulcro.algorithms.denormalize :as fdn]
     [dev.fisher.data-model.card-data :as card-data]
-    [dev.fisher.ui.editor.codemirror-core :as codemirror]))
+    [dev.fisher.ui.editor.codemirror-core :as codemirror]
+    [dev.fisher.ui.card.card-registry :as card-registry]))
 
 
 (defsc CodeCard [this {:keys [::codemirror] :as props}]
@@ -19,10 +14,15 @@
    :initial-state (fn [{:keys [::card-content/id
                                ::card-data/code]}]
                     {::card-content/id id
-                     ::codemirror     (comp/get-initial-state codemirror/CodeMirror
-                                         {:id   id
+                     ::codemirror      (comp/get-initial-state codemirror/CodeMirror
+                                         {:id           id
                                           :initial-code code})})}
-  (log/spy [codemirror props])
   (codemirror/ui-code-mirror codemirror))
 
 (def ui-code-card (comp/factory CodeCard {:keyfn card-content/content-ident-key}))
+
+(card-registry/register-card
+  {::card-data/predicate (fn [x] (contains? x ::card-data/code))
+   ::card-data/id        (comp/component-name CodeCard)
+   ::card-data/name      "Code"
+   ::card-data/class     CodeCard})

@@ -29,7 +29,8 @@
     [nextjournal.clojure-mode.selections :as sel]
     [nextjournal.clojure-mode.test-utils :as test-utils]
     [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [com.fulcrologic.fulcro.data-fetch :as df]))
 
 (def theme
   "Default CM css theme (per component)"
