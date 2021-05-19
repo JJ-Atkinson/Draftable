@@ -72,7 +72,7 @@
         #js {:label       label
              :styles      styles
              :placeholder placeholder
-             :selected    (if selected (hash selected) js/undefined)
+             :selectedKey (if selected (hash selected) js/undefined)
              :options     js-opts
              :onChange    (fn [elem item]
                             (let [actual-key (get hash->key (.-key item))]

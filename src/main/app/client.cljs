@@ -54,7 +54,8 @@
                         {:dropdown {:width 300}}
                         {:placeholder "Imma dropdown"
                          :label       "Dropin low"
-                         :selected    dropdown-v
+                         ;:selected    'not-a-string
+                         :selected    :key
                          :onChange    (fn [x]
                                         (println [x (type x)]))
                          :options     [{:key :key :text "lbl-key"}
