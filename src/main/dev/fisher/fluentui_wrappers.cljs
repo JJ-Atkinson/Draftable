@@ -2,7 +2,7 @@
   (:require [com.fulcrologic.fulcro.algorithms.react-interop :as react-interop]
             [taoensso.encore :as enc]
             ["@fluentui/react" :refer (PrimaryButton Stack DefaultButton ThemeProvider PartialTheme
-                                        createTheme Dropdown DropdownMenuItemType)]
+                                        createTheme Dropdown DropdownMenuItemType Text Layer)]
             [taoensso.timbre :as log]))
 
 
@@ -84,4 +84,23 @@
   [style opts]
   (assoc opts :styles style))
 
-(def stack (react-interop/react-factory Stack))
+(def stack
+  "https://developer.microsoft.com/en-us/fluentui#/controls/web/stack"
+  (react-interop/react-factory Stack))
+
+(def stack-item 
+  (react-interop/react-factory (.-Item Stack)))
+
+(defn vstack [opts & children] (apply stack (merge {:horizontal false} opts) children))
+(defn hstack [opts & children] (apply stack (merge {:horizontal true} opts) children))
+
+(def text (react-interop/react-factory Text))
+
+(defn Stext [& strs] (apply text #js {:variant "small"} strs))
+(defn Mtext [& strs] (apply text #js {:variant "medium"} strs))
+(defn M+text [& strs] (apply text #js {:variant "mediumPlus"} strs))
+
+
+;; see grouped list
+
+(def layer (react-interop/react-factory Layer))

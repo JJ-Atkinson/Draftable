@@ -40,38 +40,20 @@
    :initial-state {:codemirror       [{:id 1 :initial-code ";; I'm number 1"}
                                       {:id 2 :initial-code ";; I'm number 2 "}]
                    :wsmanager        {:id :wsmanager}
-                   :dropdown-v       :key
-                   ::card-content/id {:code-contents1 {::card-data/code  ";; I AM Z CODE"
-                                                       ::card-content/id :code-contents1}}}}
-  (dom/div :.root
-    ;(ui-not-quite-root not-quite-root)
-    (fui/theme-provider {:applyTo "body" :theme fui/dark-theme}
-      (fui/stack {}
-        (fui/primary-button {:text     "Hiya"
-                             :disabled false
-                             :onClick  (fn [x] (js/alert "Yo"))})
-        (fui/dropdown (fui/with-dropdown-styles
-                        {:dropdown {:width 300}}
-                        {:placeholder "Imma dropdown"
-                         :label       "Dropin low"
-                         ;:selected    'not-a-string
-                         :selected    :key
-                         :onChange    (fn [x]
-                                        (println [x (type x)]))
-                         :options     [{:key :key :text "lbl-key"}
-                                       {:key 'not-a-string :text "lbl-key1"}]}))))
-
-    (wsm/ui-wsmanager wsmanager)))
+                   :dropdown-v       :key}}
+  (fui/theme-provider {:applyTo "body" :theme fui/dark-theme}
+    (dom/div :.root
+      (wsm/ui-wsmanager wsmanager))))
 
 (comment
-  (let [cardid   :code-contents1
+  (let [cardid   (gensym)
         code     ";; I AM Z CODE"
         carddata {::card-data/code  code
                   ::card-content/id cardid}]
     (comp/transact! SPA
-      [#_(card/set-card-content {:id            cardid
-                                 :clazz         code-card/CodeCard
-                                 :initial-state (comp/get-initial-state code-card/CodeCard carddata)})
+      [(card/set-card-content {:id            cardid
+                               :clazz         code-card/CodeCard
+                               :initial-state (comp/get-initial-state code-card/CodeCard carddata)})
        (wsm/add-card {:wsm-id :wsmanager :cardid cardid})])))
 
 

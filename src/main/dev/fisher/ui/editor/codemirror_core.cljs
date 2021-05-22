@@ -3,17 +3,18 @@
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom :as dom]
     [goog.object :as gobj]
+    [dev.fisher.ui.editor.codemirror-one-dark-theme :as cm-one-dark]
 
     ["@codemirror/closebrackets" :refer [closeBrackets]]
     ["@codemirror/fold" :as fold]
     ["@codemirror/gutter" :refer [lineNumbers]]
-    ["@codemirror/highlight" :as highlight]
     ["@codemirror/history" :refer [history historyKeymap]]
     ["@codemirror/state" :refer [EditorState]]
     ["@codemirror/view" :as view :refer [EditorView]]
     ["@codemirror/state" :as cm-state
      :refer [EditorState EditorSelection Extension StateCommand
              ChangeSet ChangeDesc TransactionSpec StrictTransactionSpec]]
+    ["@codemirror/highlight" :as highlight :refer [HighlightStyle tags]]
     ["lezer" :as lezer]
     ["lezer-generator" :as lg]
     ["lezer-tree" :as lz-tree]
@@ -51,12 +52,19 @@
             ;".cm-cursor"              {:visibility "hidden"}
             "&.cm-focused .cm-cursor" {:visibility "visible"}})))
 
+;(def highlight-style
+;  (do
+;    (.define HighlightStyle
+;      (j/lit {:tag   (.-keyword tags)
+;              :color "#ffffff"}))))
 (defn extensions [onchange-handler]
-  #js[theme
+  #js[#_theme
+      cm-one-dark/one-dark-theme
+      cm-one-dark/one-dark-highlight-style
       (history)
-      highlight/defaultHighlightStyle
+      ;highlight/defaultHighlightStyle
       (view/drawSelection)
-      (lineNumbers)
+      ;(lineNumbers)
       (fold/foldGutter)
       ;(.. EditorState -allowMultipleSelections (of true))
       cm-clj/default-extensions
@@ -110,10 +118,10 @@
                       :text (text-of* @state id)}))))
 
 (defsc CodeMirror [this props]
-  {:query                [::id                ;; id
-                          ::source-file       ;; path from which the code comes from
-                          ::initial-code      ;; string of the code to populate the editor with, only used on first render
-                          ::doc-object]       ;; the codemirror document, updated on state change https://codemirror.net/6/docs/ref/#text.Text
+  {:query                [::id          ;; id
+                          ::source-file ;; path from which the code comes from
+                          ::initial-code ;; string of the code to populate the editor with, only used on first render
+                          ::doc-object] ;; the codemirror document, updated on state change https://codemirror.net/6/docs/ref/#text.Text
    :initial-state        {::id           :param/id
                           ::source-file  :param/source-file
                           ::initial-code ";; PLACEHOLDER"}
@@ -125,10 +133,11 @@
                                             (-mount-cm ref initial-code
                                               #(comp/transact! this [(update-text-object {::id id ::doc-object (-doc-of %)})])))))})
    :componentWillUnmount (fn [this]
-                           (j/call (gobj/get this "cm-inst") :destroy))}
+                           (when-let [cm (gobj/get this "cm-inst")]
+                             (j/call cm :destroy)))}
   (dom/div
     (dom/input {:onChange #(m/set-string!! this ::source-file :event %)
-                :value (::source-file props)})
+                :value    (::source-file props)})
     (dom/button {:onClick #(df/load! this :text nil
                              {:params {:file (::source-file props)}
                               ;; TASK: update text object ???

@@ -23,6 +23,17 @@
   (filter (fn [x] ((::card-data/predicate x) card-data))
     (vals @registered-cards)))
 
+(defn get-card 
+  [card-register-id]
+  (get @registered-cards card-register-id))
+
+(defn card-name [card-register-id] (::name (get-card card-register-id)))
+
+(defn build-card 
+  "Given a card"
+  [card-register-id]
+  (let [card-defn (get @registered-cards card-register-id)]))
+
 
 ;; SearchBox "new file: xxx.clj"
 ;; New File

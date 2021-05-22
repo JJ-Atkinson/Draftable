@@ -3,7 +3,7 @@
     [com.fulcrologic.fulcro.application :as application]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom :as dom]
-    
+
     [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
     [com.fulcrologic.fulcro.algorithms.normalized-state :as fns :refer [swap!->]]
     [com.fulcrologic.fulcro.react.hooks :as hooks]
@@ -13,7 +13,8 @@
     [taoensso.timbre :as log]
     [dev.fisher.ui.cards.cards-importer]
     [dev.fisher.ui.card.card-registry :as card-registry]
-    ))
+    [dev.fisher.fluentui-wrappers :as fui]
+    [taoensso.encore :as enc]))
 
 
 (defonce card-root-factory-registry
@@ -24,7 +25,7 @@
 (defmutation set-card-content [{:keys [id clazz initial-state]}]
   (action [{:keys [state app]}]
     (if-not clazz
-      (log/errorf "Card with id %s cannot have it's content set to a nil class")
+      (log/error nil "Card with [id] cannot have it's content set to a nil class" id)
       (let [factory (comp/factory clazz)]
         (swap!-> state
           (assoc-in [::id id ::sub-renderer] factory)
@@ -40,7 +41,7 @@
                      ::sub-renderer
                      {::backing-data (comp/get-query clazz)}]}))))))
 
-(defn class-query-initialized? 
+(defn class-query-initialized?
   "roundabout hack to prevent running the first frame of ::sub-renderer with the wrong
    query. The first frame of Card will have the wrong query, and if a sub-renderer is 
    provided before the first frame of Card (re-mounting card, mounting new card with 
@@ -50,16 +51,16 @@
   (some->
     (get @card-root-factory-registry cardid)
     (comp/get-query (application/current-state appish))
-    (log/spy)
     (last)
     (not= ::un-initialized-query)))
 
 
 (defsc Card [this {::keys [id backing-data sub-renderer default-card-clazz] :as props
-                   :or {backing-data card-content/BlankCard}}]
+                   :or    {backing-data card-content/BlankCard}}]
   {:query                   [::id
                              ;; only used on first load, allows selection of the card class before
                              ;; the card is rendered. (the mutation cannot be called until the card is mounted)
+                             ::selected-card-id
                              ::default-card-clazz
                              ::sub-renderer
                              {::backing-data (comp/get-query card-content/BlankCard)}
@@ -70,10 +71,22 @@
                               {::id           id
                                ::backing-data {card-content/content-ident-key id}})
    :preserve-dynamic-query? true}
-  (if-not (class-query-initialized? this id)
-    (do (comp/transact! this [(set-card-content {:id id :clazz default-card-clazz :initial-state {}})])
-        nil)
-    (dom/div "card-header" (str id)
+  (fui/vstack {}
+    (fui/hstack {:horizontalAlign "space-between"}
+      (fui/Mtext "Card header" (str id))
+      (fui/dropdown (fui/with-dropdown-styles
+                      {:dropdown {:width 300}}
+                      {:placeholder "Card View"
+                       :selected    :key
+                       :onChange    (fn [x]
+                                      (println [x (type x)]))
+                       :options     [{:key :key :text "lbl-key"}
+                                     {:key 'not-a-string :text "lbl-key1"}]})))
+    (if (and (not (class-query-initialized? this id)) default-card-clazz)
+      (do (comp/transact! this [(set-card-content {:id            id
+                                                   :clazz         default-card-clazz
+                                                   :initial-state {}})])
+          nil)
       (when sub-renderer
         (sub-renderer backing-data)))))
 
