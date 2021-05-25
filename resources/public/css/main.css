@@ -14,3 +14,8 @@
     padding: 2px 4px;
     border-radius: 2px;
 }
+
+.cm-editor-root, .cm-editor {
+    height: 100%;
+    
+}

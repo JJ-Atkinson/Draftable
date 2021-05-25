@@ -136,20 +136,22 @@
    :componentWillUnmount (fn [this]
                            (when-let [cm (gobj/get this "cm-inst")]
                              (j/call cm :destroy)))}
-  (fui/vstack fui/lowgap-stack
-    (fui/hstack fui/lowgap-stack
-      (fui/input {:onChange    #(m/set-string!! this ::source-file :event %)
-                  :value       (or (::source-file props) "")
-                  :placeholder "Source file location"})
-      (fui/button {:onClick #(df/load! this :text nil
-                               {:params {:file (::source-file props)}
-                                ;; TASK: update text object ???
-                                })}
-        "LOAD FROM DISK")
-      (fui/primary-button {:onClick #(comp/transact! this [(save-text props)])}
-        (str "SAVE-" (::id props))))
-    (dom/div {:classes ["rounded-md mb-0 text-sm monospace overflow-auto relative border shadow-lg bg-white"]
-              :ref     (comp/get-state this :save-ref)
-              :style   {:maxHeight 400}})))
+  (fui/vstack (assoc fui/lowgap-stack
+                :verticalFill true)
+    (fui/stack-item {:grow 0}
+      (fui/hstack fui/lowgap-stack
+        (fui/input {:onChange    #(m/set-string!! this ::source-file :event %)
+                    :value       (or (::source-file props) "")
+                    :placeholder "Source file location"})
+        (fui/button {:onClick #(df/load! this :text nil
+                                 {:params {:file (::source-file props)}
+                                  ;; TASK: update text object ???
+                                  })}
+          "LOAD FROM DISK")
+        (fui/primary-button {:onClick #(comp/transact! this [(save-text props)])}
+          (str "SAVE-" (::id props)))))
+    (fui/stack-item {:grow 1}
+      (dom/div {:classes ["cm-editor-root rounded-md mb-0 text-sm monospace overflow-auto relative border shadow-lg bg-white"]
+                :ref     (comp/get-state this :save-ref)}))))
 
 (def ui-code-mirror (comp/factory CodeMirror {:keyfn ::id}))

@@ -72,7 +72,7 @@
                               {::id           id
                                ::backing-data {card-content/content-ident-key id}})
    :preserve-dynamic-query? true}
-  (fui/vstack {}
+  (fui/vstack {:verticalFill true}
     (fui/hstack {:horizontalAlign "space-between"}
       (fui/Mtext "Card header" (str id))
       (fui/dropdown (fui/with-dropdown-styles
@@ -80,8 +80,8 @@
                       {:placeholder "Card View"
                        :selected    selected-perspective
                        :onChange    #(m/set-value!! this ::selected-perspective %)
-                       :options     [{:key :key :text "lbl-key"}
-                                     {:key 'not-a-string :text "lbl-key1"}]})))
+                       :options     [{:key :key :text "Code"}
+                                     {:key 'not-a-string :text "Custom"}]})))
     (if (and (not (class-query-initialized? this id)) default-card-clazz)
       (do (comp/transact! this [(set-card-content {:id            id
                                                    :clazz         default-card-clazz
