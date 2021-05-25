@@ -1,24 +1,26 @@
 {:deps     {:aliases [:dev]}
  :dev-http {8000 "classpath:public"}
  :nrepl    {:port 9000}
- :builds   {:main       {:target     :browser
-                         :output-dir "resources/public/js/main"
-                         :asset-path "/js/main"
-                         :modules    {:main {:init-fn app.client/init
+ :builds   {:main {:target           :browser
+                   :output-dir       "resources/public/js/main"
+                   :asset-path       "/js/main"
+                   :modules          {:main {:init-fn app.client/init
                                              :entries [app.client]}}
-                         :devtools   {:after-load app.client/refresh
+                   :devtools         {:after-load app.client/refresh
                                       :preloads   [com.fulcrologic.fulcro.inspect.preload
                                                    com.fulcrologic.fulcro.inspect.dom-picker-preload]}
-                         
-                         :compiler-options {:output-feature-set :es6}}
+                   :closure-defines  {dev.fisher.fluentui-wrappers/WARN_FIRST_ARG_NOT_MAP              true
+                                      dev.fisher.fluentui-wrappers/TRY_PREVENT_FIRST_ARG_NOT_MAP_ERROR true}
+
+                   :compiler-options {:output-feature-set :es6}}
 
             #_#_:workspaces {:target     nubank.workspaces.shadow-cljs.target
-                         :ns-regexp  "-(test|ws)$"
-                         :output-dir "resources/public/workspaces/js"
-                         :asset-path "/js/workspaces"
-                         ;:preloads   [com.fulcrologic.fulcro.inspect.preload]
-                         :devtools   {:preloads           [com.fulcrologic.fulcro.inspect.preload]
-                                      :http-root          "resources/public/workspaces"
-                                      :http-port          8023
-                                      :http-resource-root "."}}}
+                             :ns-regexp  "-(test|ws)$"
+                             :output-dir "resources/public/workspaces/js"
+                             :asset-path "/js/workspaces"
+                             ;:preloads   [com.fulcrologic.fulcro.inspect.preload]
+                             :devtools   {:preloads           [com.fulcrologic.fulcro.inspect.preload]
+                                          :http-root          "resources/public/workspaces"
+                                          :http-port          8023
+                                          :http-resource-root "."}}}
  }

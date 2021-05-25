@@ -30,6 +30,7 @@
 
 (def one-dark-theme-obj
   (clj->js {".cm-panels.cm-panels-bottom"                 {"borderTop" "2px solid black"}
+            ".cm-editor" {"border" "none"}
             ".cm-tooltip"                                 {"border"          "1px solid #181a1f"
                                                            "backgroundColor" darkBackground}
 

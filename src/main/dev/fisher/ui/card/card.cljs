@@ -55,12 +55,13 @@
     (not= ::un-initialized-query)))
 
 
-(defsc Card [this {::keys [id backing-data sub-renderer default-card-clazz] :as props
+(defsc Card [this {::keys [id backing-data sub-renderer default-card-clazz
+                           selected-perspective] :as props
                    :or    {backing-data card-content/BlankCard}}]
   {:query                   [::id
                              ;; only used on first load, allows selection of the card class before
                              ;; the card is rendered. (the mutation cannot be called until the card is mounted)
-                             ::selected-card-id
+                             ::selected-perspective
                              ::default-card-clazz
                              ::sub-renderer
                              {::backing-data (comp/get-query card-content/BlankCard)}
@@ -77,9 +78,8 @@
       (fui/dropdown (fui/with-dropdown-styles
                       {:dropdown {:width 300}}
                       {:placeholder "Card View"
-                       :selected    :key
-                       :onChange    (fn [x]
-                                      (println [x (type x)]))
+                       :selected    selected-perspective
+                       :onChange    #(m/set-value!! this ::selected-perspective %)
                        :options     [{:key :key :text "lbl-key"}
                                      {:key 'not-a-string :text "lbl-key1"}]})))
     (if (and (not (class-query-initialized? this id)) default-card-clazz)

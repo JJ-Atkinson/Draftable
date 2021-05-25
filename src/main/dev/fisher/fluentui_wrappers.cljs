@@ -2,9 +2,47 @@
   (:require [com.fulcrologic.fulcro.algorithms.react-interop :as react-interop]
             [taoensso.encore :as enc]
             ["@fluentui/react" :refer (PrimaryButton Stack DefaultButton ThemeProvider PartialTheme
-                                        createTheme Dropdown DropdownMenuItemType Text Layer)]
-            [taoensso.timbre :as log]))
+                                        createTheme Dropdown DropdownMenuItemType Text Layer
+                                        TextField)]
+            ["@fluentui/react/lib/Icons" :refer (initializeIcons)]
+            [taoensso.timbre :as log]
+            [com.fulcrologic.fulcro.dom :as dom]))
 
+
+;; IF TRY_PREVENT_FIRST_ARG_NOT_MAP_ERROR is enabled,
+;;  WARN_FIRST_ARG_NOT_MAP *MUST* be enabled too
+(goog-define WARN_FIRST_ARG_NOT_MAP false)
+(goog-define TRY_PREVENT_FIRST_ARG_NOT_MAP_ERROR false)
+
+(def -interop-factory
+  "Use `-interop-factory` for user-facing safety checking. It *will not* recognize 
+   #js maps as first args, and will error. In cases where you know #js props are being 
+   passed in, use `react-interop/react-factory` instead"
+  (if WARN_FIRST_ARG_NOT_MAP
+    (fn [react-factory]
+      (let [fulcro-factory (react-interop/react-factory react-factory)]
+        (fn [& args]
+          (let [error? (not (map? (first args)))]
+            (when error?
+              (log/warn "Factory is not being called with props, check your call."))
+            (if (and error? TRY_PREVENT_FIRST_ARG_NOT_MAP_ERROR)
+              (dom/div "CHECK PROPS")
+              (apply fulcro-factory args))))))
+    react-interop/react-factory))
+
+(def -prop-merge 
+  (if WARN_FIRST_ARG_NOT_MAP 
+    (fn [& maps]
+      (if (every? map? maps)
+        (apply merge maps)
+        (do
+          (log/error "Calling merge on non-existent map")
+          {})))
+    merge))
+
+;; https://github.com/microsoft/fluentui/wiki/Using-icons
+(defonce icon-loading
+  (do (initializeIcons)))
 
 ;; https://fabricweb.z5.web.core.windows.net/pr-deploy-site/refs/heads/master/theming-designer/index.html
 (def dark-theme
@@ -32,17 +70,36 @@
                        :black                "#fbfbfb"
                        :white                "#111111"}}))
 
-(def theme-provider (react-interop/react-factory ThemeProvider))
+(def theme-provider (-interop-factory ThemeProvider))
 
-(def primary-button (react-interop/react-factory PrimaryButton))
+(def button (-interop-factory DefaultButton))
+(def primary-button (-interop-factory PrimaryButton))
+
+(def text-field
+  "Props
+  ```
+  {:label    Label, not inline unless specified
+   :value    String value
+   :onChange (fn [element ?new-str] ...)
+   :styles   https://developer.microsoft.com/en-us/fluentui#/controls/web/textfield
+   ...}```"
+  (-interop-factory TextField))
+(def input
+  "Props
+  ```
+  {:label    Label, not inline unless specified
+   :value    String value
+   :onChange (fn [element ?new-str] ...)
+   :styles   https://developer.microsoft.com/en-us/fluentui#/controls/web/textfield
+   ...}```"
+  (-interop-factory TextField))
 
 (def dd_item-header (.-Header DropdownMenuItemType))
 (def dd_item-divider (.-Divider DropdownMenuItemType))
 
-
 (def -cached-option-converter
   "Converts a dropdown option map into a js dropdown option map"
-  (let [rw-key (fn [m] (update m :key (fn [k] (hash k))))]
+  (let [rw-key (fn [m] (update m :key hash))]
     (enc/memoize 20 (* 1000 60 60)
       (fn [opts]
         (let [updated (map rw-key opts)]
@@ -86,21 +143,26 @@
 
 (def stack
   "https://developer.microsoft.com/en-us/fluentui#/controls/web/stack"
-  (react-interop/react-factory Stack))
+  (-interop-factory Stack))
 
-(def stack-item 
-  (react-interop/react-factory (.-Item Stack)))
+(def lowgap-stack "Map defining low gaps in stacks" {:tokens {:childrenGap 10}})
+(def medgap-stack "Map defining medium gaps in stacks" {:tokens {:childrenGap 25}})
 
-(defn vstack [opts & children] (apply stack (merge {:horizontal false} opts) children))
-(defn hstack [opts & children] (apply stack (merge {:horizontal true} opts) children))
+(def stack-item
+  (-interop-factory (.-Item Stack)))
 
-(def text (react-interop/react-factory Text))
+(defn vstack [opts & children] (apply stack (-prop-merge {:horizontal false} opts) (or children [])))
+(defn hstack [opts & children] (apply stack (-prop-merge {:horizontal true} opts) (or children [])))
 
-(defn Stext [& strs] (apply text #js {:variant "small"} strs))
-(defn Mtext [& strs] (apply text #js {:variant "medium"} strs))
-(defn M+text [& strs] (apply text #js {:variant "mediumPlus"} strs))
+(def text (-interop-factory Text))
+
+
+(let [-text (react-interop/react-factory Text)]
+  (defn Stext [& strs] (apply -text #js {:variant "small"} strs))
+  (defn Mtext [& strs] (apply -text #js {:variant "medium"} strs))
+  (defn M+text [& strs] (apply -text #js {:variant "mediumPlus"} strs)))
 
 
 ;; see grouped list
 
-(def layer (react-interop/react-factory Layer))
+(def layer (-interop-factory Layer))
