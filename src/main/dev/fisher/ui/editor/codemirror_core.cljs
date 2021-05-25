@@ -123,9 +123,10 @@
                           ::source-file ;; path from which the code comes from
                           ::initial-code ;; string of the code to populate the editor with, only used on first render
                           ::doc-object] ;; the codemirror document, updated on state change https://codemirror.net/6/docs/ref/#text.Text
-   :initial-state        {::id           :param/id
-                          ::source-file  :param/source-file
-                          ::initial-code ";; PLACEHOLDER"}
+   :initial-state        (fn [{:keys [id source-file initial-code]}]
+                           {::id           id
+                            ::source-file  source-file
+                            ::initial-code (or initial-code "")})
    :ident                ::id
    :initLocalState       (fn [this {::keys [initial-code id]}]
                            {:save-ref (fn [ref]

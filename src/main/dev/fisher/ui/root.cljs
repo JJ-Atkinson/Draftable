@@ -12,7 +12,7 @@
 
 (defsc Root [this {::keys [workspace-manager] :as props}]
   {:query         [{::workspace-manager (comp/get-query ws-manager/WorkspacesManager)}]
-   :initial-state {::workspace-manager {:id ::ws-manager-singleton}}}
+   :initial-state {::workspace-manager {:id :ws-manager-singleton}}}
   (fui/theme-provider {:applyTo "body" :theme fui/dark-theme}
     (dom/div :.root
       (ws-manager/ui-workspaces-manager workspace-manager))))

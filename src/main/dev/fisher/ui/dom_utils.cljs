@@ -22,7 +22,8 @@
     (map (fn [{:keys [text id]}]
            (dom/div :.tab
              {:onClick #(on-select id)
-              :classes [(when (= selected-id id) "active")]}
+              :classes [(when (= selected-id id) "active")]
+              :key     (hash id)}
              (fui/M+text text)
              (fui/icon {:iconName "Cancel"
                         :onClick  (fn [evt]

@@ -17,10 +17,10 @@
 (defmutation add-card
   "Add a cardid to the workspace. Relies in the cardid existing beforehand. Will
    not manage the state of the card in any way."
-  [{:keys [wsm-id cardid]}]
+  [{:keys [wm-id card-id]}]
   (action [{:keys [state]}]
     (swap!-> state
-      (update-in [::id wsm-id ::children] conj cardid))))
+      (update-in [::id wm-id ::children] conj card-id))))
 
 
 (def ReactGridLayout (react-interop/react-factory (new WidthProvider RGL)))
