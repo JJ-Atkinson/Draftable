@@ -3,7 +3,7 @@
             [taoensso.encore :as enc]
             ["@fluentui/react" :refer (PrimaryButton Stack DefaultButton ThemeProvider PartialTheme
                                         createTheme Dropdown DropdownMenuItemType Text Layer
-                                        TextField)]
+                                        TextField Pivot PivotItem Label)]
             ["@fluentui/react/lib/Icons" :refer (initializeIcons)]
             [taoensso.timbre :as log]
             [com.fulcrologic.fulcro.dom :as dom]))
@@ -30,8 +30,8 @@
               (apply fulcro-factory args))))))
     react-interop/react-factory))
 
-(def -prop-merge 
-  (if WARN_FIRST_ARG_NOT_MAP 
+(def -prop-merge
+  (if WARN_FIRST_ARG_NOT_MAP
     (fn [& maps]
       (if (every? map? maps)
         (apply merge maps)
@@ -72,8 +72,10 @@
 
 (def theme-provider (-interop-factory ThemeProvider))
 
-(def button (-interop-factory DefaultButton))
-(def primary-button (-interop-factory PrimaryButton))
+(def button "Props: `{:text str :onClick fn}`" (-interop-factory DefaultButton))
+(def primary-button "Props: `{:text str :onClick fn}`" (-interop-factory PrimaryButton))
+
+(def label (-interop-factory Label))
 
 (def text-field
   "Props
@@ -145,6 +147,7 @@
   "https://developer.microsoft.com/en-us/fluentui#/controls/web/stack"
   (-interop-factory Stack))
 
+(def nogap-stack "Map defining no gaps in stacks" {:tokens {:childrenGap 0}})
 (def lowgap-stack "Map defining low gaps in stacks" {:tokens {:childrenGap 10}})
 (def medgap-stack "Map defining medium gaps in stacks" {:tokens {:childrenGap 25}})
 
@@ -161,6 +164,10 @@
   (defn Stext [& strs] (apply -text #js {:variant "small"} strs))
   (defn Mtext [& strs] (apply -text #js {:variant "medium"} strs))
   (defn M+text [& strs] (apply -text #js {:variant "mediumPlus"} strs)))
+
+(def pivot (-interop-factory Pivot))
+(def pivot-item (-interop-factory PivotItem))
+
 
 
 ;; see grouped list

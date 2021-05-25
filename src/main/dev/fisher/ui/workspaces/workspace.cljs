@@ -1,4 +1,4 @@
-(ns dev.fisher.ui.workspaces.workspace-manager
+(ns dev.fisher.ui.workspaces.workspace
   (:require
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.algorithms.normalized-state :as fns :refer [swap!->]]
@@ -25,13 +25,15 @@
 
 (def ReactGridLayout (react-interop/react-factory (new WidthProvider RGL)))
 
-(defsc WSManager [this {::keys [id children layout] :as props}]
+(defsc WorkspacePanel [this {::keys [id children layout] :as props}]
   {:query         [::id
                    ;; children is a list of card ids
                    ::children
+                   ::ui-name
                    ::layout]
-   :initial-state (fn [{:keys [id]}]
+   :initial-state (fn [{:keys [id ui-name]}]
                     {::id       id
+                     ::ui-name  ui-name
                      ::children []
                      ::layout   []})
    :ident         ::id}
@@ -43,4 +45,4 @@
              (card/ui-content-root {::card/id child})))
       children)))
 
-(def ui-wsmanager (comp/factory WSManager {:keyfn ::id}))
+(def ui-workspace-panel (comp/factory WorkspacePanel {:keyfn ::id}))
