@@ -5,7 +5,12 @@
 
 
 (defn tab-panel
-  ""
+  "{:selected-id  id of tab to highlight
+    :items        [{:text string :id any?} ...}
+    :on-select    (fn [id] ...)
+    :on-close     (fn [id] ...)
+    :on-add       (fn [] ...), the + button is only shown if this is not nil
+    }"
   [{:keys [selected-id
            items
            on-select

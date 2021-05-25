@@ -27,8 +27,8 @@
 .tab-panel > .tab, .tab-panel > .tab-add  {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 6px;
+    gap: 8px;
+    padding: 4px 6px 4px 8px;
 }
 
 .tab-panel > .tab, .tab-panel > .tab *, .tab-panel > .tab-add {
@@ -37,7 +37,7 @@
 }
 
 .tab-panel > .tab:hover, .tab-panel > .tab.active, .tab-panel > .tab-add:hover {
-    background-color: #666;
+    background-color: #555;
 }
 
 .tab-panel > .tab i:hover {
