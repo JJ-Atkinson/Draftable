@@ -4,7 +4,8 @@
             ["@fluentui/react" :refer (PrimaryButton Stack DefaultButton ThemeProvider PartialTheme
                                         createTheme Dropdown DropdownMenuItemType Text Layer
                                         TextField Pivot PivotItem Label)]
-            ["@fluentui/react/lib/Icons" :refer (initializeIcons)]
+            ["@fluentui/react/lib/Icons" :refer (initializeIcons )]
+            ["@fluentui/react/lib/Icon" :refer (FontIcon )]
             [taoensso.timbre :as log]
             [com.fulcrologic.fulcro.dom :as dom]))
 
@@ -20,14 +21,16 @@
    passed in, use `react-interop/react-factory` instead"
   (if WARN_FIRST_ARG_NOT_MAP
     (fn [react-factory]
-      (let [fulcro-factory (react-interop/react-factory react-factory)]
-        (fn [& args]
-          (let [error? (not (map? (first args)))]
-            (when error?
-              (log/warn "Factory is not being called with props, check your call."))
-            (if (and error? TRY_PREVENT_FIRST_ARG_NOT_MAP_ERROR)
-              (dom/div "CHECK PROPS")
-              (apply fulcro-factory args))))))
+      (if-not react-factory
+        (constantly (dom/div "YOU FORGOT TO IMPORT THE FACTORY"))
+        (let [fulcro-factory (react-interop/react-factory react-factory)]
+          (fn [& args]
+            (let [error? (not (map? (first args)))]
+              (when error?
+                (log/warn "Factory is not being called with props, check your call."))
+              (if (and error? TRY_PREVENT_FIRST_ARG_NOT_MAP_ERROR)
+                (dom/div "CHECK PROPS")
+                (apply fulcro-factory args)))))))
     react-interop/react-factory))
 
 (def -prop-merge
@@ -41,7 +44,7 @@
     merge))
 
 ;; https://github.com/microsoft/fluentui/wiki/Using-icons
-(defonce icon-loading
+(defonce -icon-loading
   (do (initializeIcons)))
 
 ;; https://fabricweb.z5.web.core.windows.net/pr-deploy-site/refs/heads/master/theming-designer/index.html
@@ -167,6 +170,8 @@
 
 (def pivot (-interop-factory Pivot))
 (def pivot-item (-interop-factory PivotItem))
+
+(def icon (-interop-factory FontIcon))
 
 
 

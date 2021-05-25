@@ -17,5 +17,29 @@
 
 .cm-editor-root, .cm-editor {
     height: 100%;
-    
+}
+
+
+.tab-panel {
+    border-bottom: 1px solid #aaa;
+}
+
+.tab-panel > .tab, .tab-panel > .tab-add  {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+}
+
+.tab-panel > .tab, .tab-panel > .tab *, .tab-panel > .tab-add {
+    cursor: pointer;
+    user-select: none;
+}
+
+.tab-panel > .tab:hover, .tab-panel > .tab.active, .tab-panel > .tab-add:hover {
+    background-color: #666;
+}
+
+.tab-panel > .tab i:hover {
+    background-color: #37214d;
 }
