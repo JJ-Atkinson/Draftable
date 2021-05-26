@@ -34,33 +34,9 @@
     [com.fulcrologic.fulcro.data-fetch :as df]
     [dev.fisher.fluentui-wrappers :as fui]))
 
-(def theme
-  "Default CM css theme (per component)"
-  (.theme EditorView
-    (j/lit {".cm-content"             {:white-space "pre-wrap"
-                                       :padding     "10px 0"}
-            "&.cm-focused"            {:outline "none"}
-            ".cm-line"                {:padding     "0 9px"
-                                       :line-height "1.6"
-                                       :font-size   "16px"
-                                       :font-family "var(--code-font)"}
-            ".cm-matchingBracket"     {:border-bottom "1px solid var(--teal-color)"
-                                       :color         "inherit"}
-            ".cm-gutters"             {:background "transparent"
-                                       :border     "none"}
-            ".cm-gutterElement"       {:margin-left "5px"}
-            ;; only show cursor when focused
-            ;".cm-cursor"              {:visibility "hidden"}
-            "&.cm-focused .cm-cursor" {:visibility "visible"}})))
 
-;(def highlight-style
-;  (do
-;    (.define HighlightStyle
-;      (j/lit {:tag   (.-keyword tags)
-;              :color "#ffffff"}))))
 (defn extensions [onchange-handler]
-  #js[#_theme
-      cm-one-dark/one-dark-theme
+  #js[cm-one-dark/one-dark-theme
       cm-one-dark/one-dark-highlight-style
       (history)
       ;highlight/defaultHighlightStyle
@@ -76,13 +52,6 @@
       (-> EditorView .-updateListener (.of onchange-handler))])
 
 
-;; TASK: move this out
-#_(defn use-lifecycle [setup teardown]
-    (hooks/use-effect (fn setup-effect* []
-                        (when setup (setup))
-                        (fn teardown-effect* [] (when teardown (teardown))))
-      #js [0]))
-
 (defn -mount-cm
   "Element is the parent in the dom, code is the initiail string contents, onchange is a (fn [view-update] )
    https://codemirror.net/6/docs/ref/#view.ViewUpdate"
@@ -94,15 +63,35 @@
                            :extensions #js[(extensions onchange)]})
             :parent element})))
 
+;; id -> instance
+(defonce -mounted-cm-instances (atom {}))
+
 (defn -doc-of [cm-or-txn]
   (-> cm-or-txn (.-state) (.-doc)))
 
 (defn -text-of [cm-or-txn]
   (-> cm-or-txn -doc-of (.toString)))
 
-(defmutation update-text-object [{:as props ::keys [id doc-object]}]
+
+
+(defn -cm-update-doc-object
+  "Dispatch a txn against the cm inst to reset the document object to the 
+   (string | Text) document provided. Incidentally calls the change listener from
+   -mount-cm, causing the db value to be immediately updated"
+  [cm-inst new-doc]
+  (let [#_#_txn (-> cm-inst
+                  (.-state)
+                  (.update))]
+    (.dispatch cm-inst #js {:changes #js {:from   0
+                                          :to     (.-length (-doc-of cm-inst))
+                                          :insert new-doc}})))
+
+(defmutation -update-text-object
+  "Change out the document object stored in the app db. Usually only useful if 
+   the CodeMirror is not mounted, since codemirror is not a controlled component.
+   See `reset-text` for a version that immediately changes the ui OR updates the db."
+  [{:as props ::keys [id doc-object]}]
   (action [{:keys [state app]}]
-    (js/console.log "doc-object" doc-object)
     (swap! state assoc-in [::id id ::doc-object] doc-object)))
 
 (defn text-of*
@@ -118,26 +107,49 @@
       (m/with-params {:file (::source-file params)
                       :text (text-of* @state id)}))))
 
+(defmutation reset-text 
+  "Reset the text (doc-object) of any CodeMirror in the database. If mounted, 
+   it will immediately dispatch an update to the screen for a repaint."
+  [{::keys [id code-str]}]
+  (action [{:keys [state app]}]
+    (if-let [cm-inst (get @-mounted-cm-instances id)]
+      (-cm-update-doc-object cm-inst code-str) 
+      ;; if it's not mounted, update the cold storage at least
+      (comp/transact! app [(-update-text-object {::id id ::doc-object code-str})]))))
+
 (defsc CodeMirror [this props]
-  {:query                [::id          ;; id
-                          ::source-file ;; path from which the code comes from
-                          ::initial-code ;; string of the code to populate the editor with, only used on first render
-                          ::doc-object] ;; the codemirror document, updated on state change https://codemirror.net/6/docs/ref/#text.Text
-   :initial-state        (fn [{:keys [id source-file initial-code]}]
-                           {::id           id
-                            ::source-file  source-file
-                            ::initial-code initial-code})
-   :ident                ::id
-   :initLocalState       (fn [this {::keys [initial-code id doc-object]}]
-                           {:save-ref (fn [ref]
-                                        (when-not (gobj/get this "cm-inst")
-                                          (gobj/set this "cm-inst"
-                                            ;; since we may be re-mounting, doc-object could be populated
-                                            (-mount-cm ref (or doc-object initial-code "")
-                                              #(comp/transact! this [(update-text-object {::id id ::doc-object (-doc-of %)})])))))})
-   :componentWillUnmount (fn [this]
-                           (when-let [cm (gobj/get this "cm-inst")]
-                             (j/call cm :destroy)))}
+  {:query
+   [::id                                ;; id
+    ::source-file                       ;; path from which the code comes from
+    ::initial-code                      ;; string of the code to populate the editor with, only used on first render
+    ::doc-object]                       ;; the codemirror document, updated on state change https://codemirror.net/6/docs/ref/#text.Text
+
+   :initial-state
+   (fn [{:keys [id source-file initial-code]}]
+     {::id           id
+      ::source-file  source-file
+      ::initial-code initial-code})
+
+   :ident
+   ::id
+
+   :initLocalState
+   (fn [this {::keys [initial-code id doc-object]}]
+     {:save-ref (fn [ref]
+                  (when-not ref (swap! -mounted-cm-instances dissoc id))
+                  (when-not (gobj/get this "cm-inst")
+                    (let [new-inst (-mount-cm ref (or doc-object initial-code "")
+                                     #(comp/transact! this [(-update-text-object
+                                                              {::id id ::doc-object (-doc-of %)})]))]
+                      (swap! -mounted-cm-instances assoc id new-inst)
+                      (gobj/set this "cm-inst"
+                        ;; since we may be re-mounting, doc-object could be populated
+                        new-inst))))})
+
+   :componentWillUnmount
+   (fn [this]
+     (when-let [cm (gobj/get this "cm-inst")]
+       (j/call cm :destroy)))}
   (fui/vstack (assoc fui/lowgap-stack
                 :verticalFill true)
     (fui/stack-item {:grow 0}
