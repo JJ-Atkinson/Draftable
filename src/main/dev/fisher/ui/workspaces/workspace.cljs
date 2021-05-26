@@ -39,6 +39,7 @@
    :ident         ::id}
   (ReactGridLayout
     {:layout         layout
+     :measureBeforeMount true
      :onLayoutChange (fn [layout] (mut/set-value!! this ::layout layout))}
     (map (fn [child]
            (dom/div {:key (str child)}
