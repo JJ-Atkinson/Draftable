@@ -57,7 +57,7 @@
 
 (defsc Card [this {::keys [id backing-data sub-renderer default-card-clazz
                            selected-perspective] :as props
-                   :or    {backing-data card-content/BlankCard}}]
+                   :or {backing-data card-content/BlankCard}}]
   {:query                   [::id
                              ;; only used on first load, allows selection of the card class before
                              ;; the card is rendered. (the mutation cannot be called until the card is mounted)
@@ -72,8 +72,10 @@
                               {::id           id
                                ::backing-data {card-content/content-ident-key id}})
    :preserve-dynamic-query? true}
-  (fui/vstack {:verticalFill true}
-    (fui/hstack {:horizontalAlign "space-between"}
+  (fui/vstack {:verticalFill true
+               :className    "no-cursor"}
+    (fui/hstack {:horizontalAlign "space-between"
+                 :className       "cursor react-grid-layout-handle"}
       (fui/Mtext "Card header" (str id))
       (fui/dropdown (fui/with-dropdown-styles
                       {:dropdown {:width 300}}
@@ -82,6 +84,7 @@
                        :onChange    #(m/set-value!! this ::selected-perspective %)
                        :options     [{:key :key :text "Code"}
                                      {:key 'not-a-string :text "Custom"}]})))
+
     (if (and (not (class-query-initialized? this id)) default-card-clazz)
       (do (comp/transact! this [(set-card-content {:id            id
                                                    :clazz         default-card-clazz

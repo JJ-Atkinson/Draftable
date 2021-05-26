@@ -43,3 +43,10 @@
 .tab-panel > .tab i:hover {
     background-color: #37214d;
 }
+
+.react-draggable, .cursor {
+    cursor: move;
+}
+.no-cursor {
+    cursor: auto;
+}

@@ -40,7 +40,8 @@
   (ReactGridLayout
     {:layout             layout
      :measureBeforeMount true
-     :onLayoutChange     (fn [layout] (mut/set-value!! this ::layout layout))}
+     :onLayoutChange     (fn [layout] (mut/set-value!! this ::layout layout))
+     :draggableHandle    ".react-grid-layout-handle"}
     (map (fn [child]
            (dom/div {:key (str child)}
              (card/ui-content-root {::card/id child})))
