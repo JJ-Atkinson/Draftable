@@ -79,12 +79,9 @@
    (string | Text) document provided. Incidentally calls the change listener from
    -mount-cm, causing the db value to be immediately updated"
   [cm-inst new-doc]
-  (let [#_#_txn (-> cm-inst
-                  (.-state)
-                  (.update))]
-    (.dispatch cm-inst #js {:changes #js {:from   0
-                                          :to     (.-length (-doc-of cm-inst))
-                                          :insert new-doc}})))
+  (.dispatch cm-inst #js {:changes #js {:from   0
+                                        :to     (.-length (-doc-of cm-inst))
+                                        :insert new-doc}}))
 
 (defmutation -update-text-object
   "Change out the document object stored in the app db. Usually only useful if 
