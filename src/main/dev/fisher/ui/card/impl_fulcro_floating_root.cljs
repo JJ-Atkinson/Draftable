@@ -54,9 +54,8 @@
                                                              (comp/computed
                                                                (get fulcro-props join-key initial-state)
                                                                @pass-through-props))))
-                                                       {:query         (fn [_] (log/spy
-                                                                                 [{join-key (comp/get-query child-factory)}]))
-                                                        :initial-state (fn [_] (log/spy {join-key initial-state}))
+                                                       {:query         (fn [_] [{join-key (comp/get-query child-factory)}])
+                                                        :initial-state (fn [_] {join-key initial-state})
                                                         :componentName join-key})
                                        real-factory  (comp/factory cls {:keyfn (fn [_] join-key)})
                                        factory       (with-meta
