@@ -104,13 +104,13 @@
       (m/with-params {:file (::source-file params)
                       :text (text-of* @state id)}))))
 
-(defmutation reset-text 
+(defmutation reset-text
   "Reset the text (doc-object) of any CodeMirror in the database. If mounted, 
    it will immediately dispatch an update to the screen for a repaint."
   [{::keys [id code-str]}]
   (action [{:keys [state app]}]
     (if-let [cm-inst (get @-mounted-cm-instances id)]
-      (-cm-update-doc-object cm-inst code-str) 
+      (-cm-update-doc-object cm-inst code-str)
       ;; if it's not mounted, update the cold storage at least
       (comp/transact! app [(-update-text-object {::id id ::doc-object code-str})]))))
 
@@ -147,22 +147,21 @@
    (fn [this]
      (when-let [cm (gobj/get this "cm-inst")]
        (j/call cm :destroy)))}
-  (fui/vstack (assoc fui/lowgap-stack
-                :verticalFill true)
-    (fui/stack-item {:grow 0}
-      (fui/hstack fui/lowgap-stack
-        (fui/input {:onChange    #(m/set-string!! this ::source-file :event %)
-                    :value       (or (::source-file props) "")
-                    :placeholder "Source file location"})
-        (fui/button {:onClick #(df/load! this :text nil
-                                 {:params {:file (::source-file props)}
-                                  ;; TASK: update text object ???
-                                  })}
-          "LOAD FROM DISK")
-        (fui/primary-button {:onClick #(comp/transact! this [(save-text props)])}
-          (str "SAVE-" (::id props)))))
-    (fui/stack-item {:grow 1}
-      (dom/div {:classes ["cm-editor-root rounded-md mb-0 text-sm monospace overflow-auto relative border shadow-lg bg-white"]
-                :ref     (comp/get-state this :save-ref)}))))
+  (dom/div :.cm-card 
+    (fui/hstack (assoc fui/lowgap-stack
+                  :className "cm-card-header")
+      (fui/input {:onChange    #(m/set-string!! this ::source-file :event %)
+                  :value       (or (::source-file props) "")
+                  :placeholder "Source file location"})
+      (fui/button {:onClick #(df/load! this :text nil
+                               {:params {:file (::source-file props)}
+                                ;; TASK: update text object ???
+                                })}
+        "LOAD FROM DISK")
+      (fui/primary-button {:onClick #(comp/transact! this [(save-text props)])}
+        (str "SAVE-" (::id props))))
+    
+    (dom/div {:classes ["cm-editor-root rounded-md mb-0 text-sm monospace overflow-auto relative border shadow-lg bg-white"]
+              :ref     (comp/get-state this :save-ref)})))
 
 (def ui-code-mirror (comp/factory CodeMirror {:keyfn ::id}))
