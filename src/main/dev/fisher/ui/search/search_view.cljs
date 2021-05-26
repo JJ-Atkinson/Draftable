@@ -4,8 +4,6 @@
     [com.fulcrologic.fulcro.algorithms.normalized-state :as fns :refer [swap!->]]
     [com.fulcrologic.fulcro.dom :as dom]
     [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
-    [com.fulcrologic.fulcro.rendering.multiple-roots-renderer :as mrr]
-    [com.fulcrologic.fulcro.algorithms.react-interop :as react-interop]
     [app.SPA :refer [SPA]]
     [dev.fisher.fluentui-wrappers :as fui]
     [com.fulcrologic.fulcro.dom.events :as events]))
@@ -14,7 +12,7 @@
 (defmutation set-visible-search-view [{:keys [visible?]}]
   (action [{:keys [state]}]
     (swap!-> state
-      (assoc-in [::id :singleton ::display?] visible?))))
+      (assoc-in [:component/id ::id ::display?] visible?))))
 
 (comment
   (comp/transact! SPA [(set-visible-search-view {:visible? true})])
@@ -35,17 +33,16 @@
                       :onClick (fn [evt] (events/stop-propagation! evt)))
           content)))))
 
-(defsc SearchView [this {::keys [id display?] :as props}]
-  {:query         [::id
-                   ::display?]
+(defsc SearchView [this {::keys [display?] :as props}]
+  {:query         [::display?]
    :initial-state {}
-   :ident         (fn [_] [::id :singleton])}
+   :ident         (fn [_] [:component/id ::id])}
   (when display?
     (dom/div :.modal-background
       {:onClick (fn [_] (comp/transact! this [(set-visible-search-view {:visible? false})]))}
       (center-two-thirds
-        (fui/input {:placeholder "search"
-                    :autoFocus   true
-                    :componentRef (fn [x] (.focus x))})))))
+        (fui/input {:placeholder  "search"
+                    :autoFocus    true
+                    :componentRef (fn [x] (when x (.focus x)))})))))
 
-(def ui-search-view (comp/factory SearchView {:keyfn ::id}))
+(def ui-search-view (comp/factory SearchView {:keyfn :component/id}))

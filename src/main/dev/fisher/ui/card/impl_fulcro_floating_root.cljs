@@ -1,8 +1,6 @@
 (ns dev.fisher.ui.card.impl-fulcro-floating-root
-  (:require-macros [com.fulcrologic.fulcro.react.hooks :refer [use-effect use-lifecycle]])
+  (:require-macros [com.fulcrologic.fulcro.react.hooks :refer [use-lifecycle]])
   (:require
-    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
-    [goog.object :as gobj]
     cljsjs.react
     [com.fulcrologic.fulcro.components :as comp]
     [com.fulcrologic.fulcro.rendering.multiple-roots-renderer :as mrr]

@@ -14,7 +14,13 @@
     position: absolute;
     top: 0;
     left: 0;
-    background-color: rgba(11, 11, 11, 0.22);
+    background-color: rgba(211, 211, 211, 0.18);
+}
+
+.status-bar {
+    font-size: 16px;
+    height: 1.4em;
+    background-color: #444;
 }
 
 .react-grid-item.react-resizable {
