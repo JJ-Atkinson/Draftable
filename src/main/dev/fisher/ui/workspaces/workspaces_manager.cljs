@@ -73,7 +73,7 @@
 
 (comment
   (let [cardid   (gensym)
-        code     ";; I AM Z OTHHER CODE"
+        code     ";; I AM Z OR COE"
         carddata {::card-data/code  code
                   ::card-content/id cardid}]
     (comp/transact! SPA

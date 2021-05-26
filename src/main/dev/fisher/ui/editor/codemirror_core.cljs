@@ -86,10 +86,10 @@
 (defn -mount-cm
   "Element is the parent in the dom, code is the initiail string contents, onchange is a (fn [view-update] )
    https://codemirror.net/6/docs/ref/#view.ViewUpdate"
-  [element code onchange]
+  [element code-or-doc-object onchange]
   (new EditorView
     (j/lit {:state  (.create EditorState
-                      #js {:doc        code
+                      #js {:doc        code-or-doc-object
                            :selection  js/undefined
                            :extensions #js[(extensions onchange)]})
             :parent element})))
@@ -126,13 +126,14 @@
    :initial-state        (fn [{:keys [id source-file initial-code]}]
                            {::id           id
                             ::source-file  source-file
-                            ::initial-code (or initial-code "")})
+                            ::initial-code initial-code})
    :ident                ::id
-   :initLocalState       (fn [this {::keys [initial-code id]}]
+   :initLocalState       (fn [this {::keys [initial-code id doc-object]}]
                            {:save-ref (fn [ref]
                                         (when-not (gobj/get this "cm-inst")
                                           (gobj/set this "cm-inst"
-                                            (-mount-cm ref initial-code
+                                            ;; since we may be re-mounting, doc-object could be populated
+                                            (-mount-cm ref (or doc-object initial-code "")
                                               #(comp/transact! this [(update-text-object {::id id ::doc-object (-doc-of %)})])))))})
    :componentWillUnmount (fn [this]
                            (when-let [cm (gobj/get this "cm-inst")]
