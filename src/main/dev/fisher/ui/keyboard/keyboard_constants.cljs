@@ -2,7 +2,8 @@
   (:require
     [goog.events :as ev]
     [clojure.string :as str]
-    [clojure.set :as set]))
+    [clojure.set :as set]
+    [cljs.spec.alpha :as s]))
 
 
 ;; Partially lifted from re-pressed,
@@ -13,6 +14,25 @@
                      18                 ;; alt
                      91                 ;; windows (i.e. meta) 
                      })
+
+(s/def ::alt? boolean?)
+(s/def ::ctrl? boolean?)
+(s/def ::meta? boolean?)
+(s/def ::shift? boolean?)
+(s/def ::in-input? boolean?)
+(s/def ::key string?)
+(s/def ::key-code int?)
+(s/def ::key-combo
+  (s/keys
+    :req-un [::alt? ::ctrl? ::meta? ::in-input?
+             (or ::key ::key-code)]
+    :opt-un [::shift?]))
+
+(s/def ::modifier-key? boolean?)
+(s/def ::key-event 
+  (s/merge 
+    ::key-combo 
+    (s/keys :req-un [::modifier-key?])))
 
 (def event-key-remappings
   "Rename some of the weird key names from goog.events. Only used when 
@@ -59,6 +79,7 @@
       numbers
       special-chars
       {"[{"  219
+       "\\|"  220
        "]}"  221
        "'\"" 222})))
 
@@ -87,8 +108,7 @@
                                      (:key-code evt-or-combo-matcher))
           shift?    (:shift? evt-or-combo-matcher)
           modifiers (str
-                      (when (and shift?
-                              (not cased?)) "s")
+                      (when (and shift? (not cased?)) "s")
                       (when (:meta? evt-or-combo-matcher) "m")
                       (when (:alt? evt-or-combo-matcher) "a")
                       (when (:ctrl? evt-or-combo-matcher) "c")
