@@ -161,13 +161,13 @@
 
 (defn evt-matches? [evt combo-matcher]
   (and
+    (if (contains? combo-matcher :key)
+      (= (:key evt) (:key combo-matcher))
+      (= (:key-code evt) (:key-code combo-matcher)))
     (= (:alt? evt) (:alt? combo-matcher))
     (= (:ctrl? evt) (:ctrl? combo-matcher))
     (= (:meta? evt) (:meta? combo-matcher))
     (= (:in-input? evt) (:in-input? combo-matcher))
     (or (not (contains? combo-matcher :shift?))
-      (= (:shift? evt) (:shift? combo-matcher)))
-    (if (contains? combo-matcher :key)
-      (= (:key evt) (:key combo-matcher))
-      (= (:key-code evt) (:key-code combo-matcher)))))
+      (= (:shift? evt) (:shift? combo-matcher)))))
 
