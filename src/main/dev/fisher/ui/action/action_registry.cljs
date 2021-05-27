@@ -49,7 +49,7 @@
    ::title "Search"
    ::invoke #(js/console.log "Action!!!")
    ::description "Runs search"
-   ::default-key-combo [["c" "a"]]}
+   ::default-key-combo [["c" "b"] ["K"]]}
   )
 
 (register-action!

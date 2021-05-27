@@ -9,6 +9,8 @@
 ;; Partially lifted from re-pressed,
 ;; https://github.com/gadfly361/re-pressed/blob/master/src/main/re_pressed/impl.cljs 
 
+(ev/unlistenByKey)
+
 (def modifier-keys #{16                 ;; shift
                      17                 ;; ctrl
                      18                 ;; alt
@@ -29,9 +31,9 @@
     :opt-un [::shift?]))
 
 (s/def ::modifier-key? boolean?)
-(s/def ::key-event 
-  (s/merge 
-    ::key-combo 
+(s/def ::key-event
+  (s/merge
+    ::key-combo
     (s/keys :req-un [::modifier-key?])))
 
 (def event-key-remappings
@@ -79,9 +81,36 @@
       numbers
       special-chars
       {"[{"  219
-       "\\|"  220
+       "\\|" 220
        "]}"  221
        "'\"" 222})))
+
+;; https://github.com/google/closure-library/blob/master/closure/goog/events/keycodes.js#L27
+;; slightly modified for SPC, ESC, and DEL
+(defonce simple-key->key-code
+  ^{:doc "The simple key -> keycode combinations that don't care about case. e.g.
+          F*, Enter, Space, Back, etc."}
+  (merge
+    (zipmap (map (fn [idx] (str "F" idx)) (range 1 13))
+      (range 112 124))
+    {"BACK"      8
+     "TAB"       9
+     "ENTER"     13
+     ;; Modifier keys could go here, but since we don't care about any of them for 
+     ;; single key shortcuts I've not bothered to enter them.
+     "CAPS_LOCK" 20
+     "SPC"       32
+     "ESC"       27
+     "END"       35
+     "HOME"      36
+     "LEFT"      37
+     "UP"        38
+     "RIGHT"     39
+     "DOWN"      40
+     "INSERT"    45
+     "DEL"       46
+     "PHANTOM"   255                    ;; Debugging?? not entirely sure this will be needed
+     }))
 
 (defonce
   ^{:doc
@@ -97,16 +126,16 @@
                    :shift?   true}})
       lower-upper->key-code)))
 
-(let [kc->lower-upper (set/map-invert lower-upper->key-code)]
+(let [kc->lower-upper (set/map-invert lower-upper->key-code)
+      kc->key         (set/map-invert simple-key->key-code)]
   (defn str-ify
     "Take an event (or key combo matcher built by `build-key-combo-matcher`) and 
      convert it to a string. Format is \"(modifiers-)?[key key-code]\". In the event
      a key-code + shift is used to indicate an upper case key, the key is used instead
      of the keycode and the shift modifier."
     [evt-or-combo-matcher]
-    (let [[lower upper :as cased?] (get kc->lower-upper
-                                     (:key-code evt-or-combo-matcher))
-          shift?    (:shift? evt-or-combo-matcher)
+    (let [{:keys [shift? key-code]} evt-or-combo-matcher
+          [lower upper :as cased?] (get kc->lower-upper key-code)
           modifiers (str
                       (when (and shift? (not cased?)) "s")
                       (when (:meta? evt-or-combo-matcher) "m")
@@ -116,7 +145,8 @@
 
           kc-or-key (or (when cased? (if shift? upper lower))
                       (:key evt-or-combo-matcher)
-                      (:key-code evt-or-combo-matcher))]
+                      (kc->key key-code)
+                      key-code)]
       (str
         modifiers
         (when (seq modifiers) "-")
@@ -153,11 +183,13 @@
                                   (modifier-shorthand->evt-prop k) true))
                         base
                         modifiers)
-         type         (if (string? k) :key :key-code)
-         cased-letter (get key->keycode+modifier k)]
+         k->kc?       (get simple-key->key-code k k)
+         type         (if (string? k->kc?) :key :key-code)
+         cased-letter (get key->keycode+modifier k)
+         ]
      (if cased-letter
        (merge with-mod cased-letter)
-       (assoc with-mod type k)))))
+       (assoc with-mod type k->kc?)))))
 
 (defn evt-matches? [evt combo-matcher]
   (and

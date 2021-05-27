@@ -43,4 +43,4 @@
     (fn [e] (f (evt->clj e)))))
 
 (comment 
-  (register-document-listener "keydown" (comp println k-const/str-ify)))
+  (register-document-listener "keydown" println))
