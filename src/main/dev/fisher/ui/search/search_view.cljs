@@ -38,7 +38,7 @@
    :initial-state {}
    :ident         (fn [_] [:component/id ::id])}
   (when display?
-    (dom/div :.modal-background
+    (dom/div :.over-content-position.modal-background
       {:onClick (fn [_] (comp/transact! this [(set-visible-search-view {:visible? false})]))}
       (center-two-thirds
         (fui/input {:placeholder  "search"

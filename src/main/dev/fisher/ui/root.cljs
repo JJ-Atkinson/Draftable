@@ -7,6 +7,7 @@
     [dev.fisher.ui.workspaces.workspaces-manager :as ws-manager]
     [dev.fisher.ui.search.search-view :as search-view]
     [dev.fisher.ui.status-bar :as status-bar]
+    [dev.fisher.ui.keyboard.whichkey-display :as whichkey-display]
     [dev.fisher.ui.cards.cards-importer]
     [dev.fisher.fluentui-wrappers :as fui]
     [dev.fisher.ui.keyboard.keyboard-sm :as keyboard-sm]
@@ -16,13 +17,15 @@
 
 
 
-(defsc Root [this {::keys [workspace-manager search-view status-bar] :as props}]
+(defsc Root [this {::keys [workspace-manager search-view status-bar whichkey] :as props}]
   {:query         [{::workspace-manager (comp/get-query ws-manager/WorkspacesManager)}
                    {::search-view (comp/get-query search-view/SearchView)}
-                   {::status-bar (comp/get-query status-bar/StatusBar)}]
+                   {::status-bar (comp/get-query status-bar/StatusBar)}
+                   {::whichkey (comp/get-query whichkey-display/WhichkeyDisplay)}]
    :initial-state {::workspace-manager {:id :ws-manager-singleton}
                    ::search-view       {}
-                   ::status-bar        {}}}
+                   ::status-bar        {}
+                   ::whichkey          {}}}
   (fui/theme-provider {:applyTo "body" :theme fui/dark-theme}
     (dom/div :.root
       (fui/vstack (assoc fui/nogap-stack
@@ -31,11 +34,12 @@
           (ws-manager/ui-workspaces-manager workspace-manager))
         (fui/stack-item {:grow 0}
           (status-bar/ui-status-bar status-bar))))
-    (search-view/ui-search-view search-view)))
+    (search-view/ui-search-view search-view)
+    (whichkey-display/ui-whichkey-display whichkey)))
 
 (defmutation initialize [{:as params}]
   (action [{:keys [state app]}]
     (uism/begin! app keyboard-sm/keyboard-listener-uism 
       ::keyboard-listener 
-      {:actor/whichkey-display [:component/id :not-existing-yet]
+      {:actor/whichkey-display [:component/id ::whichkey-display/id]
        :actor/status-display   [:component/id ::status-bar/id]})))

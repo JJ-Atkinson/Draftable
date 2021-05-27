@@ -21,11 +21,17 @@
 (defn handler [x]
   {::uism/handler x})
 
+(defn timeout-show-whichkey [env]
+  (uism/set-timeout env
+    :whichkey
+    :event/show-whichkey {}
+    whichkey-display-delay))
+
 (defn update-stack [env append?]
-  (let [new-stack (if append? 
+  (let [new-stack (if append?
                     (conj (uism/retrieve env ::current-key-stack) append?)
                     [])]
-    (-> env 
+    (-> env
       (uism/assoc-aliased :status-key-stack new-stack)
       (uism/store ::current-key-stack new-stack))))
 
@@ -65,10 +71,7 @@
             (->
               (uism/activate :state/listening)
               (update-stack key-desc)
-              (uism/set-timeout
-                :whichkey
-                :event/show-whichkey {}
-                whichkey-display-delay)))))
+              (timeout-show-whichkey)))))
 
       :event/show-whichkey
       (handler identity)}}
@@ -82,7 +85,9 @@
             env
             (if (k-const/evt-matches? key-desc exit-key)
               (key-event-completed env)
-              (update-stack env key-desc)))))
+              (-> env
+                (update-stack key-desc)
+                (timeout-show-whichkey))))))
 
       :event/show-whichkey
       (handler (fn [env] (uism/set-aliased-value env :whichkey-visible? true)))}}}})

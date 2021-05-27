@@ -1,7 +1,7 @@
 @import url('react-grid-layout-styles.css');
 @import url('react-resizable-styles.css');
 
-.root, .modal-background, #app, body {
+.root, .over-content-position, #app, body {
     width: 100vw;
     max-width: 100vw;
     height: 100vh;
@@ -10,10 +10,13 @@
     margin: 0;
 }
 
-.modal-background {
+.over-content-position {
     position: absolute;
     top: 0;
     left: 0;
+}
+
+.modal-background {
     background-color: rgba(211, 211, 211, 0.18);
 }
 
@@ -21,6 +24,17 @@
     font-size: 16px;
     height: 1.4em;
     background-color: #444;
+}
+
+.offset-status-bar-height {
+    background-color: transparent;
+    font-size: 16px;
+    height: 1.4em;
+}
+
+.whichkey-root {
+    background-color: #333;
+    min-height: 10em;
 }
 
 .react-grid-item.react-resizable {
