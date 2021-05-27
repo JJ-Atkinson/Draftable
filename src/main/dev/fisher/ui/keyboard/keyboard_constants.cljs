@@ -3,7 +3,8 @@
     [goog.events :as ev]
     [clojure.string :as str]
     [clojure.set :as set]
-    [cljs.spec.alpha :as s]))
+    [cljs.spec.alpha :as s]
+    [taoensso.encore :as enc]))
 
 
 ;; Partially lifted from re-pressed,
@@ -203,3 +204,45 @@
     (or (not (contains? combo-matcher :shift?))
       (= (:shift? evt) (:shift? combo-matcher)))))
 
+(defn build-key-combo-tree
+  "Take a map of vector -> any, and build a new nested map based on the contents of the vector. 
+   e.g. 
+   ```
+   {[\"r\" \"K\"] {:action :rK}
+    [\"r\" \"N\"] {:action :rN}}
+   => {\"r\" {\"K\" {:action :rK}
+            \"N\" {:action :rN}}
+   ```"
+  [combos]
+  (reduce (fn [acc [k v]]
+            (assoc-in acc k v))
+    {}
+    combos))
+
+(defn printable-key-combo-tree
+  "Take the result of `build-key-combo-tree` and replace all instances of key-combo-matcher
+   with `str-ify` so tis actually readable."
+  [tree]
+  (cond-> tree
+
+    (map? tree)
+    (->> (enc/map-keys printable-key-combo-tree)
+      (enc/map-vals printable-key-combo-tree))
+
+    (or (contains? tree :key-code) (contains? tree :key))
+    (str-ify)))
+
+(comment
+  (printable-key-combo-tree
+    (build-key-combo-tree
+      (enc/map-keys (partial map (partial apply build-key-combo-matcher))
+        {[["K"]]               :K
+         [["c" "N"] ["N"]]     :c-N_N
+         [["c" "N"] ["m" "R"]] :c-N_m-R
+         [["L"] ["M"]]         :L_M
+         [["L"] ["F"]]         :L_F})))
+  {"K"   :K
+   "c-N" {"N"   :c-N_N
+          "m-R" :c-N_m-R}
+   "L"   {"M" :L_M
+          "F" :L_F}})
