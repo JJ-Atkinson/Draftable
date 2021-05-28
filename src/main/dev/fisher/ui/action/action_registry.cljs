@@ -8,19 +8,21 @@
 
 ;; TASK: add context and focus ?
 
-(s/def ::default-key-combo (s/or :compiled (s/coll-of ::k-const/key-combo)
-                           :not-compiled (s/coll-of vector?)))
+(s/def ::default-key-combo (s/coll-of k-const/str-ified-key-combo?))
 (s/def ::title (s/and string? #(< (count %) 30)))
 (s/def ::invoke ifn?)
 (s/def ::description string?)
 (s/def ::id (s/or :k qualified-keyword? :s string?))
 
-(s/def ::action 
+(s/def ::action
   (s/keys :req [::id
-                ::title 
+                ::title
                 ::invoke
                 ::description]
     :opt [::default-key-combo]))
+
+(defn action? [x]
+  (and (map? x) (contains? x ::id)))
 
 (defonce
   ^{:doc ""}
@@ -29,33 +31,38 @@
 
 (defn- compile-key-combo [combos]
   (when combos
-    (mapv (partial apply k-const/build-key-combo-matcher) combos)))
+    (mapv k-const/coerce-str-ified-key-combo combos)))
 
-(>defn register-action!
+(defn register-action!
   ([action]
-   [::action => nil?]
-   (swap! actions-by-id assoc (::id action)
-     (enc/assoc-when action
-       ::default-key-combo (compile-key-combo (::default-key-combo action))))
+   (let [compiled (enc/assoc-when action
+                    ::default-key-combo (compile-key-combo (::default-key-combo action)))]
+     (swap! actions-by-id assoc (::id action) (s/assert ::action compiled)))
    nil)
-  
+
   ([id title invoke description]
-   [::id ::title ::invoke ::description => nil?]
-   (register-action! 
+   (register-action!
      {::id id ::title title ::invoke invoke ::description description})))
 
-(register-action!
-  {::id :action/search
-   ::title "Search"
-   ::invoke #(js/console.log "Action!!!")
-   ::description "Runs search"
-   ::default-key-combo [["c" "b"] ["K"]]}
-  )
+(defn all-actions [] (vals @actions-by-id))
 
 (register-action!
-  {::id :action/fancy-search
-   ::title "Fancy Search"
-   ::invoke #(js/console.log "Fancy Action!!!")
-   ::description "Runs search"
-   ::default-key-combo [["c" "b"] ["R"]]}
-  )
+  {::id                :action/search
+   ::title             "Search"
+   ::invoke            #(js/console.log "Action!!!")
+   ::description       "Runs search"
+   ::default-key-combo [["c" "b"] "K"]})
+
+(register-action!
+  {::id                :action/fancy-search
+   ::title             "Fancy Search"
+   ::invoke            #(js/console.log "Fancy Action!!!")
+   ::description       "Runs search"
+   ::default-key-combo [["c" "b"] "R"]})
+
+(register-action!
+  {::id                :action/alert
+   ::title             "Alert"
+   ::invoke            #(js/alert "Hiya")
+   ::description       "Alerts ya"
+   ::default-key-combo ["N"]})

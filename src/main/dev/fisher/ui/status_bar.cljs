@@ -19,6 +19,6 @@
   (fui/hstack (assoc fui/lowgap-stack
                 :className "status-bar"
                 :verticalAlign "center")
-    (fui/Mtext (str/join " " (map k-const/str-ify status-key-stack)))))
+    (fui/Mtext (str/join " " status-key-stack))))
 
 (def ui-status-bar (comp/factory StatusBar {:keyfn :component/id}))

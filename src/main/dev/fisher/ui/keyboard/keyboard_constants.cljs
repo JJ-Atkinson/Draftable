@@ -10,8 +10,6 @@
 ;; Partially lifted from re-pressed,
 ;; https://github.com/gadfly361/re-pressed/blob/master/src/main/re_pressed/impl.cljs 
 
-(ev/unlistenByKey)
-
 (def modifier-keys #{16                 ;; shift
                      17                 ;; ctrl
                      18                 ;; alt
@@ -39,7 +37,8 @@
 
 (def event-key-remappings
   "Rename some of the weird key names from goog.events. Only used when 
-   intercepting raw events"
+   intercepting raw events, but mostly phased out now since most everything is 
+   converted to keycode based activities. "
   {"Space"   "SPC"
    "Escape"  "ESC"
    "Meta"    "meta"
@@ -127,13 +126,19 @@
                    :shift?   true}})
       lower-upper->key-code)))
 
+(defonce
+  ^{:doc "Mostly for documentation, this is a list of all :key s recognized by the 
+          keyboard system currently"}
+  ALL-AVAILABLE-KEYS
+  (sort (concat (keys key->keycode+modifier) (keys simple-key->key-code))))
+
 (let [kc->lower-upper (set/map-invert lower-upper->key-code)
       kc->key         (set/map-invert simple-key->key-code)]
   (defn str-ify
     "Take an event (or key combo matcher built by `build-key-combo-matcher`) and 
      convert it to a string. Format is \"(modifiers-)?[key key-code]\". In the event
      a key-code + shift is used to indicate an upper case key, the key is used instead
-     of the keycode and the shift modifier."
+     of the keycode and the shift modifier. e.g. `P` instead of `s-p`. "
     [evt-or-combo-matcher]
     (let [{:keys [shift? key-code]} evt-or-combo-matcher
           [lower upper :as cased?] (get kc->lower-upper key-code)
@@ -145,13 +150,29 @@
                       (when (:in-input? evt-or-combo-matcher) "i"))
 
           kc-or-key (or (when cased? (if shift? upper lower))
-                      (:key evt-or-combo-matcher)
                       (kc->key key-code)
-                      key-code)]
+                      key-code
+                      (:key evt-or-combo-matcher))]
       (str
         modifiers
         (when (seq modifiers) "-")
         kc-or-key))))
+
+(let [key-set (set ALL-AVAILABLE-KEYS)]
+  (defn str-ified-key-combo? 
+    "Determines if the object is a stringified key combo. Since the order of modifiers matters,
+     please use `coerce-str-ified-key-combo` to make the strings. This is important 
+     to the key matching algorithm."
+    [x]
+    (boolean
+      (and (string? x)
+        (let [[modifiers key] (if (str/includes? x "-")
+                                (str/split x #"-" 2)
+                                ["" x])
+              upper? (:shift? (get key->keycode+modifier key))]
+          (and
+            (contains? key-set (or key modifiers))
+            (re-matches (if upper? #"m?a?c?i?" #"s?m?a?c?i?") modifiers)))))))
 
 (defn build-key-combo-matcher
   "Build a `combo-matcher` for `evt-matches`. If called with a map in single-arity, 
@@ -192,6 +213,22 @@
        (merge with-mod cased-letter)
        (assoc with-mod type k->kc?)))))
 
+(defn coerce-str-ified-key-combo
+  "Convert a variety of key combination formats into a valid str-ified key combo.
+   Valid arguments:
+   
+   [[:alt] \"C\"] ;; vector of keywords
+   [\"m\" 119]    ;; keycode
+   \"C\"          ;; key
+   \"cs-P\"       ;; slightly invalid strified key combo
+   "
+  [arg]
+  (let [[modifiers key] (cond (vector? arg) arg
+                             (not (string? arg)) nil
+                             (str/includes? arg "-") (str/split arg #"-")
+                             :else [nil arg])]
+    (str-ify (build-key-combo-matcher modifiers key))))
+
 (defn evt-matches? [evt combo-matcher]
   (and
     (if (contains? combo-matcher :key)
@@ -224,13 +261,12 @@
    with `str-ify` so tis actually readable."
   [tree]
   (cond-> tree
+    (or (contains? tree :key-code) (contains? tree :key))
+    (str-ify)
 
     (map? tree)
     (->> (enc/map-keys printable-key-combo-tree)
-      (enc/map-vals printable-key-combo-tree))
-
-    (or (contains? tree :key-code) (contains? tree :key))
-    (str-ify)))
+      (enc/map-vals printable-key-combo-tree))))
 
 (comment
   (printable-key-combo-tree

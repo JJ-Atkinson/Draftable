@@ -10,11 +10,12 @@
     [dev.fisher.ui.keyboard.keyboard-constants :as k-const]))
 
 
-(def start-key (k-const/build-key-combo-matcher "SPC"))
-(def exit-key (k-const/build-key-combo-matcher "ESC"))
+(def start-key "SPC")
+(def exit-key "ESC")
 
 (defn key-listener [asm-id key-desc]
-  (uism/trigger! SPA asm-id :event/global-key-pressed {:key-desc key-desc}))
+  (uism/trigger! SPA asm-id :event/global-key-pressed
+    {:key-desc (k-const/str-ify key-desc)}))
 
 (def whichkey-display-delay 900)
 
@@ -67,7 +68,7 @@
       (handler
         (fn [{{:keys [key-desc]} ::uism/event-data :as env}]
           (cond-> env
-            (k-const/evt-matches? key-desc start-key)
+            (= key-desc start-key)
             (->
               (uism/activate :state/listening)
               (update-stack key-desc)
@@ -83,7 +84,7 @@
         (fn [{{:keys [key-desc]} ::uism/event-data :as env}]
           (if (:modifier-key? key-desc)
             env
-            (if (k-const/evt-matches? key-desc exit-key)
+            (if (= key-desc exit-key)
               (key-event-completed env)
               (-> env
                 (update-stack key-desc)
