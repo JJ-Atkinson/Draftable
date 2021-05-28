@@ -14,6 +14,7 @@
                      17                 ;; ctrl
                      18                 ;; alt
                      91                 ;; windows (i.e. meta) 
+                     93                 ;; mac meta
                      })
 
 (s/def ::alt? boolean?)
@@ -209,9 +210,26 @@
          type         (if (string? k->kc?) :key :key-code)
          cased-letter (get key->keycode+modifier k)
          ]
-     (if cased-letter
-       (merge with-mod cased-letter)
-       (assoc with-mod type k->kc?)))))
+     (assoc (if cased-letter
+              (merge with-mod cased-letter)
+              (assoc with-mod type k->kc?))
+       :modifier-count (count modifiers)))))
+
+(defn coerce-key-combo-matcher
+  "Convert a variety of key combination formats into a valid key combo.
+   Valid arguments:
+   
+   [[:alt] \"C\"] ;; vector of keywords
+   [\"m\" 119]    ;; keycode
+   \"C\"          ;; key
+   \"cs-P\"       ;; slightly invalid strified key combo
+   "
+  [arg]
+  (let [[modifiers key] (cond (vector? arg) arg
+                              (not (string? arg)) nil
+                              (str/includes? arg "-") (str/split arg #"-")
+                              :else [nil arg])]
+    (build-key-combo-matcher modifiers key)))
 
 (defn coerce-str-ified-key-combo
   "Convert a variety of key combination formats into a valid str-ified key combo.
@@ -223,11 +241,7 @@
    \"cs-P\"       ;; slightly invalid strified key combo
    "
   [arg]
-  (let [[modifiers key] (cond (vector? arg) arg
-                             (not (string? arg)) nil
-                             (str/includes? arg "-") (str/split arg #"-")
-                             :else [nil arg])]
-    (str-ify (build-key-combo-matcher modifiers key))))
+  (str-ify (coerce-key-combo-matcher arg)))
 
 (defn evt-matches? [evt combo-matcher]
   (and

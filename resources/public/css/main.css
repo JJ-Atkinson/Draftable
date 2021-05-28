@@ -35,7 +35,43 @@
 .whichkey-root {
     background-color: #333;
     min-height: 10em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-content: flex-start;
+    padding: 0.5em;
 }
+
+.whichkey-root .whichkey-item {
+    padding: 0.2em 0.4em;
+    width: 10em;
+    max-width: 10em;
+    background-color: #444;
+    flex-grow: 1;
+    flex-shrink: 0;
+    display: flex; 
+    align-items: center;
+    gap: 4px;
+}
+
+.whichkey-item .whichkey-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 5px;
+    background-color: #999;
+}
+
+.whichkey-root .whichkey-item:hover {
+    cursor: default;
+    background-color: #b66eff;
+    color: rgb(17, 17, 17);
+}
+
+.whichkey-item:hover .whichkey-dot {
+    background-color: rgb(17, 17, 17);
+}
+
 
 .react-grid-item.react-resizable {
     background-color: #333;

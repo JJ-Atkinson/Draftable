@@ -3,7 +3,8 @@
             [taoensso.encore :as enc]
             ["@fluentui/react" :refer (PrimaryButton Stack DefaultButton ThemeProvider PartialTheme
                                         createTheme Dropdown DropdownMenuItemType Text Layer
-                                        TextField Pivot PivotItem Label)]
+                                        TextField Pivot PivotItem Label TooltipHost
+                                        DirectionalHint)]
             ["@fluentui/react/lib/Icons" :refer (initializeIcons )]
             ["@fluentui/react/lib/Icon" :refer (FontIcon )]
             [taoensso.timbre :as log]
@@ -173,6 +174,13 @@
 
 (def icon (-interop-factory FontIcon))
 
+(def tooltip-host
+  "https://developer.microsoft.com/en-us/fluentui#/controls/web/tooltip"
+  (-interop-factory TooltipHost))
+
+(def tooltip-bottom 
+  "Map props describing direction hint bottom"
+  {:directionalHint (.-bottomCenter DirectionalHint)})
 
 
 ;; see grouped list
