@@ -55,32 +55,32 @@
                           [(dev.fisher.ui.search.search-view/set-visible-search-view
                              {:visible? true})])
    ::description       "Runs search"
-   ::default-key-combo ["SPC" ["c" "b"] "K"]})
+   ::default-key-combo [["c" "b"] "K"]})
 
 (register-action!
   {::id                :action/fancy-search
    ::title             "Fancy Search"
    ::invoke            #(js/console.log "Fancy Action!!!")
    ::description       "Runs search"
-   ::default-key-combo ["SPC" ["c" "b"] "R"]})
+   ::default-key-combo [["c" "b"] "R"]})
 
 (register-action!
   {::id                :action/alert
    ::title             "Alert"
    ::invoke            #(js/alert "Hiya")
    ::description       "Alerts ya"
-   ::default-key-combo ["SPC" "N"]})
+   ::default-key-combo ["N"]})
 
 (register-action!
   {::id                :action/edit-config
    ::title             "Edit config"
    ::invoke            #(js/console.log "Edit config")
    ::description       "Alerts ya"
-   ::default-key-combo ["SPC" "f" "e" "d"]})
+   ::default-key-combo ["f" "e" "d"]})
 
 (register-action!
   {::id                :action/edit-clj-config
    ::title             "Edit clj config"
    ::invoke            #(js/console.log "Edit clj config")
    ::description       "Alerts ya"
-   ::default-key-combo ["SPC" "f" "e" "c"]})
+   ::default-key-combo ["f" "e" "c"]})

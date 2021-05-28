@@ -41,14 +41,18 @@
     :event/show-whichkey {}
     whichkey-display-delay))
 
-(defn update-stack [env append?]
+(defn update-stack 
+  "Update the keystack in local storage and in the status bar, and update the keymap in both 
+   the local storage and in whichkey. If the appended item results in an action being invoked,
+   the action is invoked and the UISM is reset with `key-event-completed` and `(update-stack nil)`"
+  [env append? & [reset-key-map?]]
   (let [new-stack
         (if append?
           (conj (uism/retrieve env ::current-key-stack) append?)
           [])
 
         new-key-command-map
-        (if append?
+        (if (and append? (not reset-key-map?))
           (get (uism/retrieve env ::current-key-command-map) append?)
           (build-action-map env))]
     (cond
@@ -99,12 +103,12 @@
      {:event/global-key-pressed
       (handler
         (fn [{{:keys [key-desc]} ::uism/event-data :as env}]
-          (if (= key-desc start-key)
-            (-> env
-              (uism/activate :state/listening)
-              (update-stack key-desc)
-              (timeout-show-whichkey))
-            env)))
+          (-> env
+            (uism/activate :state/listening)
+            ;; reset the keymap to default if space is hit. This allows 
+            ;; the command "c" to be invoked either by "c" or by "SPC c"
+            (update-stack key-desc (= key-desc start-key))
+            (timeout-show-whichkey))))
 
       :event/show-whichkey
       (handler identity)}}
