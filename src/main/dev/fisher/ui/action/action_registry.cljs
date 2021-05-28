@@ -39,14 +39,35 @@
   ([action]
    (let [compiled (enc/assoc-when action
                     ::default-key-combo (compile-key-combo (::default-key-combo action)))]
-     (swap! actions-by-id assoc (::id action) (s/assert ::action compiled)))
-   nil)
+     (swap! actions-by-id assoc (::id action) (s/assert ::action compiled))))
 
   ([id title invoke description]
    (register-action!
      {::id id ::title title ::invoke invoke ::description description})))
 
 (defn all-actions [] (vals @actions-by-id))
+
+;; more directly keyboard related but oh well
+
+(defonce 
+  ^{:doc "Shortcut path -> {::title ::description?}, used for paths on the way
+          to other actions."}
+  default-shortcut-group-descriptions
+  (atom {}))
+
+(defn register-default-group-name
+  "Register a title / description for actions under a shared shortcut path"
+  ([shortcut-path title]
+   (register-default-group-name shortcut-path title nil))
+  ([shortcut-path title description]
+   (swap! default-shortcut-group-descriptions 
+     assoc 
+     (compile-key-combo shortcut-path)
+     (enc/assoc-some {::title title}
+       ::description description))))
+
+(defn shortcut-group-descriptions [] @default-shortcut-group-descriptions)
+
 
 (register-action!
   {::id                :action/search
@@ -55,7 +76,7 @@
                           [(dev.fisher.ui.search.search-view/set-visible-search-view
                              {:visible? true})])
    ::description       "Runs search"
-   ::default-key-combo [["c" "b"] "K"]})
+   ::default-key-combo ["SPC"]})
 
 (register-action!
   {::id                :action/fancy-search
@@ -70,6 +91,11 @@
    ::invoke            #(js/alert "Hiya")
    ::description       "Alerts ya"
    ::default-key-combo ["N"]})
+
+(register-default-group-name ["f"]
+  "Config" "Configuration options")
+(register-default-group-name ["f" "e"]
+  "Edit")
 
 (register-action!
   {::id                :action/edit-config

@@ -1,15 +1,14 @@
 (ns dev.fisher.ui.keyboard.keyboard-sm
   (:require
     [com.fulcrologic.fulcro.algorithms.normalized-state :as fns :refer [swap!->]]
-    [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
     [com.fulcrologic.fulcro.ui-state-machines :as uism :refer [defstatemachine]]
     [dev.fisher.ui.keyboard.event-interceptor :as k-event]
+    [dev.fisher.ui.keyboard.mapping-overrides :as mapping-overrides]
     [app.SPA :refer [SPA]]
     [dev.fisher.ui.action.action-registry :as action-registry]
-    [dev.fisher.fluentui-wrappers :as fui]
-    [com.fulcrologic.fulcro.dom.events :as events]
     [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [taoensso.encore :as enc]))
 
 
 (def start-key "SPC")
@@ -21,11 +20,17 @@
     (uism/trigger! SPA asm-id :event/global-key-pressed
       {:key-desc (k-const/str-ify key-desc)})))
 
-(defn build-action-map [env]
-  (k-const/build-key-combo-tree
-    (into {} (map (fn [x]
-                    [(::action-registry/default-key-combo x) x])
-               (action-registry/all-actions)))))
+(def build-action-map ;; todo: fix the memo to depend on mapping overrides
+  (let [f (enc/memoize-last
+            (fn [actions desc]
+              (mapping-overrides/build-keyboard-action-map
+                (mapping-overrides/all-actions actions)
+                (mapping-overrides/shortcut-group-descriptions desc))))]
+    (fn [env]
+      ;; todo: magic filtering using env
+      (f
+        (action-registry/all-actions)
+        (action-registry/shortcut-group-descriptions)))))
 
 (defn invoke-action [action]
   ((::action-registry/invoke action)))
@@ -41,7 +46,7 @@
     :event/show-whichkey {}
     whichkey-display-delay))
 
-(defn update-stack 
+(defn update-stack
   "Update the keystack in local storage and in the status bar, and update the keymap in both 
    the local storage and in whichkey. If the appended item results in an action being invoked,
    the action is invoked and the UISM is reset with `key-event-completed` and `(update-stack nil)`"

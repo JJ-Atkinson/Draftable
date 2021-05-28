@@ -40,12 +40,14 @@
       (bottom-whatever
         (dom/div :.whichkey-root
           (map (fn [[combo {::action-registry/keys [title description] :as action}]]
-                 (let [item (dom/div :.whichkey-item
-                              {:key combo}
+                 (let [group? (not (action-registry/action? action))
+                       item (dom/div :.whichkey-item
+                              {:key     combo
+                               :classes [(when group? "whichkey-group-identifier")]}
                               (str combo)
                               (dom/div :.whichkey-dot)
-                              (str (or title "group")))]
-                   (if (action-registry/action? action)
+                              (str (or title "untitled-group")))]
+                   (if description
                      (fui/tooltip-host
                        (assoc fui/tooltip-bottom
                          :content description
@@ -53,7 +55,10 @@
                          :id (str (hash action)))
                        item)
                      item)))
-            (sort-by-key contents-map)))))))
+            (->> contents-map
+              ;; remove ::action-registry/title and ::action-registry/description
+              (filter (comp string? key))
+              (sort-by-key))))))))
 
 (def ui-whichkey-display (comp/factory WhichkeyDisplay {:keyfn :component/id}))
 
