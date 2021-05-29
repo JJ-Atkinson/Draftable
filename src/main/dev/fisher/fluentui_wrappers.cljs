@@ -4,7 +4,7 @@
             ["@fluentui/react" :refer (PrimaryButton Stack DefaultButton ThemeProvider PartialTheme
                                         createTheme Dropdown DropdownMenuItemType Text Layer
                                         TextField Pivot PivotItem Label TooltipHost
-                                        DirectionalHint)]
+                                        DirectionalHint SearchBox)]
             ["@fluentui/react/lib/Icons" :refer (initializeIcons )]
             ["@fluentui/react/lib/Icon" :refer (FontIcon )]
             [taoensso.timbre :as log]
@@ -182,6 +182,7 @@
   "Map props describing direction hint bottom"
   {:directionalHint (.-bottomCenter DirectionalHint)})
 
+(def searchbox (-interop-factory SearchBox))
 
 ;; see grouped list
 

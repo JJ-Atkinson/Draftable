@@ -33,14 +33,14 @@
    :in-input?     (in-input? e)
    :modifier-key? (contains? k-const/modifier-keys (.-keyCode e))})
 
-(defn register-document-listener
-  "type    \"keyup\" or \"keydown\"
-   f       (fn [clj-event] ...), see `evt->clj`"
-  [type f]
-  (ev/listen
-    js/document
-    type
-    (fn [e] (f (evt->clj e)))))
+(defn register-listener
+  "type     \"keyup\" or \"keydown\"
+   ?element defaults to js/document
+   f        (fn [clj-event] ...), see `evt->clj`"
+  ([type f]
+   (register-listener type js/document f))
+  ([type element f]
+   (ev/listen element type (fn [e] (f (evt->clj e))))))
 
 (comment 
-  (register-document-listener "keydown" println))
+  (register-listener "keydown" println))

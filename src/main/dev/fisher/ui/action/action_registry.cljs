@@ -19,9 +19,9 @@
 (s/def ::action
   (s/keys :req [::id
                 ::title
-                ::invoke
-                ::description]
-    :opt [::default-key-combo]))
+                ::invoke]
+    :opt [::default-key-combo
+          ::description]))
 
 (defn action? [x]
   (and (map? x) (contains? x ::id)))
@@ -68,15 +68,6 @@
 
 (defn shortcut-group-descriptions [] @default-shortcut-group-descriptions)
 
-
-(register-action!
-  {::id                :action/search
-   ::title             "Search"
-   ::invoke            #(comp/transact! SPA
-                          [(dev.fisher.ui.search.search-view/set-visible-search-view
-                             {:visible? true})])
-   ::description       "Runs search"
-   ::default-key-combo ["SPC"]})
 
 (register-action!
   {::id                :action/fancy-search

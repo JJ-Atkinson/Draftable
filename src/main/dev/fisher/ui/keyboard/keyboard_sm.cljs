@@ -96,7 +96,7 @@
    ::uism/states
    {:initial
     (handler (fn [env]
-               (k-event/register-document-listener "keydown"
+               (k-event/register-listener "keydown"
                  (fn [k]
                    (key-listener (::uism/asm-id env) k)))
                (-> env

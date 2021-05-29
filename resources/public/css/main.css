@@ -53,6 +53,9 @@
     display: flex; 
     align-items: center;
     gap: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow-x: hidden;
 }
 
 .whichkey-root .whichkey-item.whichkey-group-identifier {
@@ -78,6 +81,25 @@
     background-color: rgb(17, 17, 17);
 }
 
+.search-panel {
+    background: #333;
+    min-height: 40vh;
+    min-width: 55vw;
+}
+
+.search-panel .results {
+    overflow-y: auto;
+}
+
+.search-panel .results .result-header {
+    background: #444;
+    font-size: 12px;
+    padding: 2px 8px;
+}
+
+.search-panel .results .result {
+    padding: 0px 8px;
+}
 
 .react-grid-item.react-resizable {
     background-color: #333;

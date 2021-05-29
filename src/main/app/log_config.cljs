@@ -8,5 +8,8 @@
 (spec/check-asserts true)
 (js/console.log "Turning logging to :debug (in app.development-preload)")
 (log/set-level! :debug)
-(log/merge-config! {:output-fn ts/prefix-output-fn
-                    :appenders {:console (ts/console-appender)}})
+;log/example-config
+(log/merge-config! {:output-fn    ts/prefix-output-fn
+                    :ns-blacklist ["com.fulcrologic.fulcro.inspect.*"
+                                   "com.fulcrologic.fulcro.ui-state-machines"]
+                    :appenders    {:console (ts/console-appender)}})

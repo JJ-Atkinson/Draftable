@@ -1,3 +1,92 @@
-(ns dev.fisher.ui.search.search-provider)
+(ns dev.fisher.ui.search.search-provider
+  (:require [cljs.spec.alpha :as s]
+            [com.fulcrologic.guardrails.core :refer [>defn =>]]
+            [dev.fisher.ui.action.action-registry :as action-registry]
+            [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
+            [app.SPA :refer [SPA]]
+            [com.fulcrologic.fulcro.components :as comp]
+            [com.wsscode.fuzzy :as fuz]
+            [clojure.string :as str]
+            [taoensso.encore :as enc]))
+
+(s/def ::id keyword?)
+(s/def ::title string?)
+;; (fn [string] [{:as :result ...} ...])
+(s/def ::search-fn ifn?)
+;; (fn [result] ...)
+(s/def ::on-pick ifn?)
+(s/def ::default-keyboard-shortcut (s/coll-of k-const/str-ified-key-combo?))
+
+(s/def ::search-provider
+  (s/keys :req [::id ::title ::search-fn ::on-pick]
+    :opt [::default-keyboard-shortcut]))
+
+(defonce
+  ^{:doc "Search provider id -> search-provider"}
+  search-providers
+  (atom {}))
 
 
+(>defn register-search-provider!
+  ""
+  [{::keys [id] :as search-provider}]
+  [::search-provider => any?]
+  (swap! search-providers assoc id search-provider)
+  (when-let [kbd-shortcut (::default-keyboard-shortcut search-provider)]
+    (action-registry/register-action!
+      #::action-registry{:id                id
+                         :title             (::title search-provider)
+                         :invoke            (fn []
+                                              (comp/transact! SPA
+                                                [`(dev.fisher.ui.search.search-view/start-search-view
+                                                    {:type ~id})]))
+                         :default-key-combo kbd-shortcut})))
+
+(defn all-search-providers-by-id [] @search-providers)
+
+(action-registry/register-action!
+  #::action-registry{:id                :search/search-everywhere
+                     :title             "Search Everywhere"
+                     :invoke            (fn []
+                                          (comp/transact! SPA
+                                            [`(dev.fisher.ui.search.search-view/start-search-view
+                                                {:type :all})]))
+                     :default-key-combo ["SPC"]})
+
+
+(def -actions-searchable
+  (let [f (enc/memoize-last (fn [actions]
+                              (map (fn [{:as x ::action-registry/keys [title]}]
+                                     (assoc x ::fuz/string title))
+                                actions)))]
+    #(f (action-registry/all-actions))))
+
+(action-registry/register-default-group-name ["s"] "Search" "Different classes of search")
+
+(register-search-provider!
+  {::id                        :search/search-actions
+   ::title                     "Actions"
+   ::search-fn                 (fn [s]
+                                 (fuz/fuzzy-match
+                                   {::fuz/options      (-actions-searchable)
+                                    ::fuz/search-input s}))
+   ::default-keyboard-shortcut ["s" "a"]
+   })
+
+(defonce fisher-nses (->> (cljs.repl/apropos #".*")
+                       (map namespace)
+                       (filter (fn [x]
+                                 (str/starts-with? x "dev.fisher")))
+                       (set)
+                       (map (fn [x] {::fuz/string x})
+                         )))
+
+(register-search-provider!
+  {::id                        :search/search-namespaces
+   ::title                     "Namespaces"
+   ::search-fn                 (fn [s]
+                                 (fuz/fuzzy-match
+                                   {::fuz/options      fisher-nses
+                                    ::fuz/search-input s}))
+   ::default-keyboard-shortcut ["s" "n"]
+   })
