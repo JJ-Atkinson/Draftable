@@ -12,11 +12,21 @@
     [com.fulcrologic.fulcro.dom.events :as events]
     [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
     [clojure.string :as str]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [dev.fisher.ui.action.action-context :as action-context]))
 
+
+;; TASK:  move me out!
+(defn constrain [low n high]
+  (if (< n low)
+    low
+    (if (> n high)
+      high
+      n)))
 
 (defmutation set-visible-search-view [{:keys [visible? type]}]
-  (action [{:keys [state]}]
+  (action [{:keys [state app]}]
+    (action-context/remove-context! app ::id)
     (swap!-> state
       (assoc-in [:component/id ::id ::display?] visible?))))
 
@@ -25,7 +35,21 @@
     (swap!-> state
       (assoc-in [:component/id ::id] {::display?               true
                                       ::active-search-provider type
+                                      ::selected-index         0
                                       ::current-results        []}))))
+
+(defn count-result-map [current-results]
+  (reduce + 0 (map (comp count second) current-results)))
+
+(defmutation nav-list [{:keys [direction]}]
+  (action [{:keys [state]}]
+    (swap! state
+      update-in [:component/id ::id]
+      (fn [{::keys [current-results] :as search}]
+        (update search ::selected-index
+          #(constrain 0
+             ((get {:up dec :down inc} direction) (or % 0))
+             (dec (count-result-map current-results))))))))
 
 (defn providers-for
   "if `:all` returns all providers in a list (unsorted), otherwise selects the 
@@ -50,14 +74,29 @@
                            [search-provider
                             (when-not (str/blank? input)
                               (take max-results (search-fn input)))])
-                      (log/spy providers))]
+                      providers)]
       (swap!-> state
-        (assoc-in [:component/id ::id ::current-results] results)))))
+        (assoc-in [:component/id ::id ::current-results] results)
+        (update-in [:component/id ::id ::selected-index]
+          #(constrain 0 % (count-result-map results)))))))
 
-(comment
-  (comp/transact! SPA [(set-visible-search-view {:visible? true})])
-  (comp/transact! SPA [(set-visible-search-view {:visible? false})])
-  )
+(defmutation run-action [{:keys [override-object]}]
+  (action [{:keys [state]}]
+    (let [{::keys [current-results selected-index]}
+          (get-in @state [:component/id ::id])
+
+          [{:as                    search-prov
+            ::search-provider/keys [on-pick]}
+           obj]
+          (reduce (fn [cnt-remaining [search-prov results]]
+                    (if (< cnt-remaining (count results))
+                      (reduced [search-prov (nth results cnt-remaining)])
+                      (- cnt-remaining (count results))))
+            selected-index
+            current-results)]
+      (when on-pick (on-pick obj))
+      (swap!-> state
+        (assoc-in [:component/id ::id ::display?] false)))))
 
 (defn esc-listener [this]
   (comp/transact! this [(set-visible-search-view {:visible? false})]))
@@ -82,35 +121,66 @@
           content)))))
 
 (defn simple-render-results [{::search-provider/keys [title] :as search-provider}
-                             results]
+                             results
+                             highlight-index]
   (when (seq results)
     (apply comp/fragment
       (dom/div :.result-header title)
-      (map (fn [{:as map s :com.wsscode.fuzzy/string}]
-             (dom/div :.result {:key (hash map)} s))
+      (map-indexed
+        (fn [idx {:as map s :com.wsscode.fuzzy/string}]
+          (dom/div :.result
+            {:key     (hash map)
+             :classes [(when (= highlight-index idx) "active")]} s))
         results))))
 
-(defsc SearchView [this {::keys [display? current-results] :as props}]
+(defsc SearchView [this {::keys [display? current-results selected-index] :as props}]
   {:query         [::display?
-                   ::current-results]
+                   ::current-results
+                   ::selected-index]
    :initial-state {}
    :ident         (fn [_] [:component/id ::id])}
   (when display?
     (dom/div :.over-content-position.modal-background
-      {:onClick (fn [_] (comp/transact! this [(set-visible-search-view
-                                                {:visible? false})]))}
+      (assoc (action-context/track-focus-props this ::id {::display? true})
+        :onClick (fn [_] (comp/transact! this [(set-visible-search-view
+                                                 {:visible? false})])))
       (center-two-thirds
         (fui/stack-item {:grow 0}
           (fui/searchbox {:placeholder      "Search Everywhere"
                           :disableAnimation true
                           :underlined       true
                           :onChange         (partial change-listener this)
+                          :onSearch         #(comp/transact! this [(run-action {})])
                           :componentRef     (fn [x] (when x (.focus x)))
                           :onEscape         (partial esc-listener this)}))
 
         (fui/stack-item {:grow 1}
           (dom/div :.results
-            (map (fn [[prov res]] (simple-render-results prov res))
-              current-results)))))))
+            ;; mess, but I don't want to fix right now :/
+            (first
+              (reduce
+                (fn [[out cnt] [prov res]]
+                  [(conj out (simple-render-results prov res (- selected-index cnt)))
+                   (+ cnt (count res))])
+                [[] 0]
+                current-results))))))))
 
 (def ui-search-view (comp/factory SearchView {:keyfn :component/id}))
+
+(action-registry/register-action!
+  #::action-registry
+      {:id                :search-action/nav-up
+       :title             "Nav up list"
+       :invoke            #(comp/transact! SPA [(nav-list {:direction :up})])
+       :description       "Navigate up search contents"
+       :context-pred      (fn [ctx] (contains? ctx ::id))
+       :default-key-combo ["i-UP"]})
+
+(action-registry/register-action!
+  #::action-registry
+      {:id                :search-action/nav-down
+       :title             "Nav down list"
+       :invoke            #(comp/transact! SPA [(nav-list {:direction :down})])
+       :description       "Navigate down search contents"
+       :context-pred      (fn [ctx] (contains? ctx ::id))
+       :default-key-combo ["i-DOWN"]})

@@ -12,6 +12,7 @@
     [dev.fisher.ui.card.card-content :as card-content]
     [taoensso.timbre :as log]
     [dev.fisher.ui.cards.cards-importer]
+    [dev.fisher.ui.action.action-context :as action-context]
     [dev.fisher.ui.card.card-registry :as card-registry]
     [dev.fisher.fluentui-wrappers :as fui]
     [taoensso.encore :as enc]))
@@ -72,26 +73,30 @@
                               {::id           id
                                ::backing-data {card-content/content-ident-key id}})
    :preserve-dynamic-query? true}
-  (fui/vstack {:verticalFill true
-               :className    "no-cursor"}
-    (fui/hstack {:horizontalAlign "space-between"
-                 :className       "cursor react-grid-layout-handle"}
-      (fui/Mtext "Card header" (str id))
-      (fui/dropdown (fui/with-dropdown-styles
-                      {:dropdown {:width 300}}
-                      {:placeholder "Card View"
-                       :selected    selected-perspective
-                       :onChange    #(m/set-value!! this ::selected-perspective %)
-                       :options     [{:key :key :text "Code"}
-                                     {:key 'not-a-string :text "Custom"}]})))
+  ;; wrapping div because FUI is stupid and doesn't have onFocus/Blur everywhere
+  (dom/div
+    (assoc (action-context/track-focus-props this ::id {::id id})
+      :style {:width "100%" :height "100%"})
+    (fui/vstack {:verticalFill true
+                 :className    "no-cursor"}
+      (fui/hstack {:horizontalAlign "space-between"
+                   :className       "cursor react-grid-layout-handle"}
+        (fui/Mtext "Card header" (str id))
+        (fui/dropdown (fui/with-dropdown-styles
+                        {:dropdown {:width 300}}
+                        {:placeholder "Card View"
+                         :selected    selected-perspective
+                         :onChange    #(m/set-value!! this ::selected-perspective %)
+                         :options     [{:key :key :text "Code"}
+                                       {:key 'not-a-string :text "Custom"}]})))
 
-    (if (and (not (class-query-initialized? this id)) default-card-clazz)
-      (do (comp/transact! this [(set-card-content {:id            id
-                                                   :clazz         default-card-clazz
-                                                   :initial-state {}})])
-          nil)
-      (when sub-renderer
-        (sub-renderer backing-data)))))
+      (if (and (not (class-query-initialized? this id)) default-card-clazz)
+        (do (comp/transact! this [(set-card-content {:id            id
+                                                     :clazz         default-card-clazz
+                                                     :initial-state {}})])
+            nil)
+        (when sub-renderer
+          (sub-renderer backing-data))))))
 
 (def ui-card (comp/factory Card {:keyfn ::id}))
 

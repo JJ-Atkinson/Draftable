@@ -89,6 +89,7 @@
 
 .search-panel .results {
     overflow-y: auto;
+    user-select: none;
 }
 
 .search-panel .results .result-header {
@@ -99,6 +100,11 @@
 
 .search-panel .results .result {
     padding: 0px 8px;
+}
+
+.search-panel .results:not(:hover) .result.active, .search-panel .results .result:hover {
+    background-color: #c891ff;
+    color: rgb(17, 17, 17);
 }
 
 .react-grid-item.react-resizable {

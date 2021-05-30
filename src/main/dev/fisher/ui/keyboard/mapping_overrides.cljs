@@ -45,11 +45,12 @@
     @shortcut-description-overrides))
 
 (defn build-keyboard-action-map [actions group-descriptions]
-  (let [combo-tree (k-const/build-key-combo-tree
+  (let [merge-ex (fn [a b] (when a (merge a b)))
+        combo-tree (k-const/build-key-combo-tree
                      (into {} (map (fn [x]
                                      [(::action-registry/default-key-combo x) x])
                                 actions)))]
     (reduce (fn [acc [shortcut desc]]
-              (update-in acc shortcut merge desc))
+              (update-in acc shortcut merge-ex desc))
       combo-tree
       group-descriptions)))

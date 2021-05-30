@@ -12,8 +12,11 @@
 
 (s/def ::default-key-combo (s/coll-of k-const/str-ified-key-combo?))
 (s/def ::title (s/and string? #(< (count %) 30)))
+;; (fn invoke! [action-context-map] any?)
 (s/def ::invoke ifn?)
 (s/def ::description string?)
+;; (fn [context-map] boolean?)
+(s/def ::context-pred ifn?)
 (s/def ::id (s/or :k qualified-keyword? :s string?))
 
 (s/def ::action
@@ -21,7 +24,8 @@
                 ::title
                 ::invoke]
     :opt [::default-key-combo
-          ::description]))
+          ::description
+          ::context-pred]))
 
 (defn action? [x]
   (and (map? x) (contains? x ::id)))
@@ -46,6 +50,13 @@
      {::id id ::title title ::invoke invoke ::description description})))
 
 (defn all-actions [] (vals @actions-by-id))
+
+(defn available-actions [context-info]
+  (filter (fn [{::keys [context-pred]}]
+            (if context-pred
+              (context-pred context-info)
+              true))
+    (all-actions)))
 
 ;; more directly keyboard related but oh well
 

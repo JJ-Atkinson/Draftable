@@ -32,7 +32,8 @@
     [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
     [taoensso.timbre :as log]
     [com.fulcrologic.fulcro.data-fetch :as df]
-    [dev.fisher.fluentui-wrappers :as fui]))
+    [dev.fisher.fluentui-wrappers :as fui]
+    [dev.fisher.ui.action.action-context :as action-context]))
 
 
 (defn extensions [onchange-handler]
@@ -116,10 +117,10 @@
 
 (defsc CodeMirror [this props]
   {:query
-   [::id                                ;; id
-    ::source-file                       ;; path from which the code comes from
-    ::initial-code                      ;; string of the code to populate the editor with, only used on first render
-    ::doc-object]                       ;; the codemirror document, updated on state change https://codemirror.net/6/docs/ref/#text.Text
+   [::id ;; id
+    ::source-file ;; path from which the code comes from
+    ::initial-code ;; string of the code to populate the editor with, only used on first render
+    ::doc-object] ;; the codemirror document, updated on state change https://codemirror.net/6/docs/ref/#text.Text
 
    :initial-state
    (fn [{:keys [id source-file initial-code]}]
@@ -147,7 +148,7 @@
    (fn [this]
      (when-let [cm (gobj/get this "cm-inst")]
        (j/call cm :destroy)))}
-  (dom/div :.cm-card 
+  (dom/div :.cm-card
     (fui/hstack (assoc fui/lowgap-stack
                   :className "cm-card-header")
       (fui/input {:onChange    #(m/set-string!! this ::source-file :event %)
@@ -160,8 +161,11 @@
         "LOAD FROM DISK")
       (fui/primary-button {:onClick #(comp/transact! this [(save-text props)])}
         (str "SAVE-" (::id props))))
-    
-    (dom/div {:classes ["cm-editor-root rounded-md mb-0 text-sm monospace overflow-auto relative border shadow-lg bg-white"]
-              :ref     (comp/get-state this :save-ref)})))
+
+    (dom/div (assoc (action-context/track-focus-props this ::id {::id (::id props)})
+               :classes ["cm-editor-root rounded-md mb-0"
+                         "text-sm monospace overflow-auto relative"
+                         "border shadow-lg bg-white"]
+               :ref (comp/get-state this :save-ref)))))
 
 (def ui-code-mirror (comp/factory CodeMirror {:keyfn ::id}))

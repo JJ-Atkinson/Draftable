@@ -8,7 +8,8 @@
     [dev.fisher.ui.action.action-registry :as action-registry]
     [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
     [taoensso.timbre :as log]
-    [taoensso.encore :as enc]))
+    [taoensso.encore :as enc]
+    [dev.fisher.ui.action.action-context :as action-context]))
 
 
 (def start-key "SPC")
@@ -27,13 +28,16 @@
                 (mapping-overrides/all-actions actions)
                 (mapping-overrides/shortcut-group-descriptions desc))))]
     (fn [env]
-      ;; todo: magic filtering using env
       (f
-        (action-registry/all-actions)
+        (-> env ::uism/state-map
+          (action-context/action-context*)
+          (action-registry/available-actions))
         (action-registry/shortcut-group-descriptions)))))
 
-(defn invoke-action [action]
-  ((::action-registry/invoke action)))
+(defn invoke-action [env action]
+  ((::action-registry/invoke action)
+   (-> env ::uism/state-map
+     (action-context/action-context*))))
 
 (def whichkey-display-delay 900)
 
@@ -65,7 +69,7 @@
       (key-event-completed env)
 
       (action-registry/action? new-key-command-map)
-      (do (invoke-action new-key-command-map)
+      (do (invoke-action env new-key-command-map)
           (-> env
             (key-event-completed)
             (update-stack nil)))

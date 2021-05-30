@@ -7,7 +7,8 @@
             [com.fulcrologic.fulcro.components :as comp]
             [com.wsscode.fuzzy :as fuz]
             [clojure.string :as str]
-            [taoensso.encore :as enc]))
+            [taoensso.encore :as enc]
+            [dev.fisher.ui.action.action-context :as action-context]))
 
 (s/def ::id keyword?)
 (s/def ::title string?)
@@ -53,13 +54,16 @@
                                                 {:type :all})]))
                      :default-key-combo ["SPC"]})
 
+(defn action-context []
+  (action-context/action-context*
+    @(:com.fulcrologic.fulcro.application/state-atom SPA)))
 
 (def -actions-searchable
   (let [f (enc/memoize-last (fn [actions]
                               (map (fn [{:as x ::action-registry/keys [title]}]
                                      (assoc x ::fuz/string title))
                                 actions)))]
-    #(f (action-registry/all-actions))))
+    #(f (action-registry/available-actions (action-context)))))
 
 (action-registry/register-default-group-name ["s"] "Search" "Different classes of search")
 
@@ -70,6 +74,9 @@
                                  (fuz/fuzzy-match
                                    {::fuz/options      (-actions-searchable)
                                     ::fuz/search-input s}))
+   ::on-pick                   (fn [s]
+                                 ((::action-registry/invoke s)
+                                  (action-context)))
    ::default-keyboard-shortcut ["s" "a"]
    })
 
