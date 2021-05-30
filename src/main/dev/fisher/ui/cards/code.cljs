@@ -22,7 +22,7 @@
 (def ui-code-card (comp/factory CodeCard {:keyfn card-content/content-ident-key}))
 
 (perspective-registry/register-perspective
-  {::card-data/predicate (fn [x] (contains? x ::card-data/code))
-   ::card-data/id        (comp/component-name CodeCard)
-   ::card-data/name      "Code"
-   ::card-data/class     CodeCard})
+  #::perspective-registry{:predicate (fn [x] (contains? x ::card-data/code))
+                          :id        (comp/component-name CodeCard)
+                          :name      "Code"
+                          :class     CodeCard})
