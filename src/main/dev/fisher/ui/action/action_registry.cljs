@@ -51,12 +51,14 @@
 
 (defn all-actions [] (vals @actions-by-id))
 
-(defn available-actions [context-info]
-  (filter (fn [{::keys [context-pred]}]
-            (if context-pred
-              (context-pred context-info)
-              true))
-    (all-actions)))
+(def available-actions
+  (enc/memoize (* 1000 60 60)
+    (fn [context-info]
+      (filter (fn [{::keys [context-pred]}]
+                (if context-pred
+                  (context-pred context-info)
+                  true))
+        (all-actions)))))
 
 ;; more directly keyboard related but oh well
 

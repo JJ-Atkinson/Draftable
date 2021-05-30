@@ -13,7 +13,7 @@
     [taoensso.timbre :as log]
     [dev.fisher.ui.cards.cards-importer]
     [dev.fisher.ui.action.action-context :as action-context]
-    [dev.fisher.ui.card.card-registry :as card-registry]
+    [dev.fisher.ui.card.perspective-registry :as perspective-registry]
     [dev.fisher.fluentui-wrappers :as fui]
     [taoensso.encore :as enc]))
 

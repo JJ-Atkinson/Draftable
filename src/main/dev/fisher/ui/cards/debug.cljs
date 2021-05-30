@@ -5,7 +5,7 @@
     [dev.fisher.ui.card.card-content :as card-content]
     [dev.fisher.data-model.card-data :as card-data]
     [zprint.core :as zprint]
-    [dev.fisher.ui.card.card-registry :as card-registry]))
+    [dev.fisher.ui.card.perspective-registry :as perspective-registry]))
 
 
 (defsc DebugCard [this props]
@@ -18,7 +18,7 @@
 
 (def ui-debug-card (comp/factory DebugCard {:keyfn card-content/content-ident-key}))
 
-(card-registry/register-card
+(perspective-registry/register-perspective
   {::card-data/predicate (constantly true)
    ::card-data/id        (comp/component-name DebugCard)
    ::card-data/name      "Card Debug"

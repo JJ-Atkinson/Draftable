@@ -133,10 +133,12 @@
              :classes [(when (= highlight-index idx) "active")]} s))
         results))))
 
-(defsc SearchView [this {::keys [display? current-results selected-index] :as props}]
+(defsc SearchView [this {::keys [display? current-results selected-index
+                                 active-search-provider] :as props}]
   {:query         [::display?
                    ::current-results
-                   ::selected-index]
+                   ::selected-index
+                   ::active-search-provider]
    :initial-state {}
    :ident         (fn [_] [:component/id ::id])}
   (when display?
@@ -146,13 +148,17 @@
                                                  {:visible? false})])))
       (center-two-thirds
         (fui/stack-item {:grow 0}
-          (fui/searchbox {:placeholder      "Search Everywhere"
-                          :disableAnimation true
-                          :underlined       true
-                          :onChange         (partial change-listener this)
-                          :onSearch         #(comp/transact! this [(run-action {})])
-                          :componentRef     (fn [x] (when x (.focus x)))
-                          :onEscape         (partial esc-listener this)}))
+          (let [[{::search-provider/keys [title]} & rest]
+                (providers-for active-search-provider)]
+            (fui/searchbox {:placeholder      (str "Search "
+                                                (if (seq rest) "Everywhere"
+                                                               title))
+                            :disableAnimation true
+                            :underlined       true
+                            :onChange         (partial change-listener this)
+                            :onSearch         #(comp/transact! this [(run-action {})])
+                            :componentRef     (fn [x] (when x (.focus x)))
+                            :onEscape         (partial esc-listener this)})))
 
         (fui/stack-item {:grow 1}
           (dom/div :.results

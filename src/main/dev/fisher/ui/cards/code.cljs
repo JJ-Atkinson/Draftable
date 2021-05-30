@@ -4,7 +4,7 @@
     [dev.fisher.ui.card.card-content :as card-content]
     [dev.fisher.data-model.card-data :as card-data]
     [dev.fisher.ui.editor.codemirror-core :as codemirror]
-    [dev.fisher.ui.card.card-registry :as card-registry]))
+    [dev.fisher.ui.card.perspective-registry :as perspective-registry]))
 
 
 (defsc CodeCard [this {:keys [::codemirror] :as props}]
@@ -21,7 +21,7 @@
 
 (def ui-code-card (comp/factory CodeCard {:keyfn card-content/content-ident-key}))
 
-(card-registry/register-card
+(perspective-registry/register-perspective
   {::card-data/predicate (fn [x] (contains? x ::card-data/code))
    ::card-data/id        (comp/component-name CodeCard)
    ::card-data/name      "Code"
