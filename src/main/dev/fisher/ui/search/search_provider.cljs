@@ -1,14 +1,15 @@
 (ns dev.fisher.ui.search.search-provider
-  (:require [cljs.spec.alpha :as s]
-            [com.fulcrologic.guardrails.core :refer [>defn =>]]
-            [dev.fisher.ui.action.action-registry :as action-registry]
-            [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
-            [app.SPA :refer [SPA]]
-            [com.fulcrologic.fulcro.components :as comp]
-            [com.wsscode.fuzzy :as fuz]
-            [clojure.string :as str]
-            [taoensso.encore :as enc]
-            [dev.fisher.ui.action.action-context :as action-context]))
+  (:require
+    [cljs.spec.alpha :as s]
+    [com.fulcrologic.guardrails.core :refer [>defn =>]]
+    [dev.fisher.ui.action.action-registry :as action-registry]
+    [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
+    [app.SPA :refer [SPA]]
+    [com.fulcrologic.fulcro.components :as comp]
+    [com.wsscode.fuzzy :as fuz]
+    [clojure.string :as str]
+    [taoensso.encore :as enc]
+    [dev.fisher.ui.action.action-context :as action-context]))
 
 (s/def ::id keyword?)
 (s/def ::title string?)
@@ -80,13 +81,13 @@
    ::default-keyboard-shortcut ["s" "a"]
    })
 
-(defonce fisher-nses (->> (cljs.repl/apropos #".*")
-                       (map namespace)
-                       (filter (fn [x]
-                                 (str/starts-with? x "dev.fisher")))
-                       (set)
-                       (map (fn [x] {::fuz/string x})
-                         )))
+(defonce fisher-nses
+  (->> []; (cljs.repl/apropos #".*") ;; FIXME: not compiling -anthony
+    (map namespace)
+    (filter (fn [x]
+              (str/starts-with? x "dev.fisher")))
+    (set)
+    (map (fn [x] {::fuz/string x}))))
 
 (register-search-provider!
   {::id                        :search/search-namespaces

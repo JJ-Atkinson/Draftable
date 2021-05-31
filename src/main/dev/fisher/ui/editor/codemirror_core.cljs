@@ -49,7 +49,7 @@
       (.of view/keymap cm-clj/complete-keymap)
       (.of view/keymap historyKeymap)
 
-      ;; onchange-handler receives https://codemirror.net/6/docs/ref/#view.ViewUpdate 
+      ;; onchange-handler receives https://codemirror.net/6/docs/ref/#view.ViewUpdate
       (-> EditorView .-updateListener (.of onchange-handler))])
 
 
@@ -76,7 +76,7 @@
 
 
 (defn -cm-update-doc-object
-  "Dispatch a txn against the cm inst to reset the document object to the 
+  "Dispatch a txn against the cm inst to reset the document object to the
    (string | Text) document provided. Incidentally calls the change listener from
    -mount-cm, causing the db value to be immediately updated"
   [cm-inst new-doc]
@@ -85,7 +85,7 @@
                                         :insert new-doc}}))
 
 (defmutation -update-text-object
-  "Change out the document object stored in the app db. Usually only useful if 
+  "Change out the document object stored in the app db. Usually only useful if
    the CodeMirror is not mounted, since codemirror is not a controlled component.
    See `reset-text` for a version that immediately changes the ui OR updates the db."
   [{:as props ::keys [id doc-object]}]
@@ -105,15 +105,18 @@
       (m/with-params {:file (::source-file params)
                       :text (text-of* @state id)}))))
 
+(defn reset-text! [{:keys [state app]} {::keys [id code-str]}]
+  (if-let [cm-inst (get @-mounted-cm-instances id)]
+    (-cm-update-doc-object cm-inst code-str)
+    ;; if it's not mounted, update the cold storage at least
+    (comp/transact! app [(-update-text-object {::id id ::doc-object code-str})])))
+
 (defmutation reset-text
-  "Reset the text (doc-object) of any CodeMirror in the database. If mounted, 
+  "Reset the text (doc-object) of any CodeMirror in the database. If mounted,
    it will immediately dispatch an update to the screen for a repaint."
-  [{::keys [id code-str]}]
-  (action [{:keys [state app]}]
-    (if-let [cm-inst (get @-mounted-cm-instances id)]
-      (-cm-update-doc-object cm-inst code-str)
-      ;; if it's not mounted, update the cold storage at least
-      (comp/transact! app [(-update-text-object {::id id ::doc-object code-str})]))))
+  [params]
+  (action [env]
+    (reset-text! env params)))
 
 (defsc CodeMirror [this props]
   {:query
@@ -155,13 +158,12 @@
                   :value       (or (::source-file props) "")
                   :placeholder "Source file location"})
       (fui/button {:onClick #(df/load! this :text nil
-                               {:params {:file (::source-file props)}
-                                ;; TASK: update text object ???
-                                })}
+                               {:params      {:file (::source-file props)}
+                                :post-action (fn [env]
+                                               (reset-text! env (merge props {::code-str (-> env :result :body :text)})))})}
         "LOAD FROM DISK")
       (fui/primary-button {:onClick #(comp/transact! this [(save-text props)])}
         (str "SAVE-" (::id props))))
-
     (dom/div (assoc (action-context/track-focus-props this ::id {::id (::id props)})
                :classes ["cm-editor-root rounded-md mb-0"
                          "text-sm monospace overflow-auto relative"

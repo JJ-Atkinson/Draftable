@@ -2,11 +2,16 @@
   (:require
     [cljs.spec.alpha :as s]
     [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
+    [dev.fisher.ui.card.card :as card]
+    [dev.fisher.data-model.card-data :as card-data]
+    [dev.fisher.ui.card.card-content :as card-content]
+    [dev.fisher.ui.cards.code :as code-card]
+    [dev.fisher.ui.workspaces.workspaces-manager :as wm]
+[dev.fisher.ui.action.editor :as actions.editor]
     [com.fulcrologic.guardrails.core :refer [>defn =>]]
     [app.SPA :refer [SPA]]
     [taoensso.encore :as enc]
     [com.fulcrologic.fulcro.components :as comp]))
-
 
 ;; TASK: add context and focus ?
 
@@ -62,7 +67,7 @@
 
 ;; more directly keyboard related but oh well
 
-(defonce 
+(defonce
   ^{:doc "Shortcut path -> {::title ::description?}, used for paths on the way
           to other actions."}
   default-shortcut-group-descriptions
@@ -73,8 +78,8 @@
   ([shortcut-path title]
    (register-default-group-name shortcut-path title nil))
   ([shortcut-path title description]
-   (swap! default-shortcut-group-descriptions 
-     assoc 
+   (swap! default-shortcut-group-descriptions
+     assoc
      (compile-key-combo shortcut-path)
      (enc/assoc-some {::title title}
        ::description description))))
@@ -114,3 +119,15 @@
    ::invoke            #(js/console.log "Edit clj config")
    ::description       "Alerts ya"
    ::default-key-combo ["f" "e" "c"]})
+
+(register-action!
+  {::id                :action/new-card
+   ::title             "New Blank Card"
+   ::invoke            actions.editor/new-card
+   ::default-key-combo ["n"]})
+
+(register-action!
+  {::id                :action/open-file
+   ::title             "Open File"
+   ::invoke            actions.editor/open-file-as-card
+   ::default-key-combo ["o"]})

@@ -11,12 +11,14 @@
   {:query         [::card-content/id
                    {::codemirror (comp/get-query codemirror/CodeMirror)}]
    :ident         ::card-content/id
-   :initial-state (fn [{:keys [::card-content/id
+   :initial-state (fn [{:as props
+                        :keys [::card-content/id
                                ::card-data/code]}]
                     {::card-content/id id
                      ::codemirror      (comp/get-initial-state codemirror/CodeMirror
-                                         {:id           id
-                                          :initial-code code})})}
+                                         (merge props
+                                           {:id           id
+                                            :initial-code code}))})}
   (codemirror/ui-code-mirror codemirror))
 
 (def ui-code-card (comp/factory CodeCard {:keyfn card-content/content-ident-key}))
