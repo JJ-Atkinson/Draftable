@@ -10,21 +10,29 @@
     [dev.fisher.ui.workspaces.workspaces-manager :as wm]))
 
 (defn new-card
-  ([] (new-card nil ";; TODO your code goes here"))
+  ([] (new-card "WIP" ";; TODO your code goes here"))
   ([file code]
    (let [cardid   (gensym)
          carddata {::card-data/code   code
                    ::card-content/id  cardid
                    :source-file file}]
      (comp/transact! SPA
-       [(card/set-card-content {:id            cardid
-                                :clazz         code-card/CodeCard
-                                :initial-state (comp/get-initial-state
-                                                 code-card/CodeCard carddata)})
+       [(card/set-perspective {:id             cardid
+                               :perspective-id :perspective/code-card
+                               :merge-state    carddata})
         (wm/add-card-to-current-workspace {:wsm-id :ws-manager-singleton :card-id cardid})]))))
 
-(defn open-file-as-card []
-  (let [file "src/dev/user.clj"]
-    (df/load! SPA :text nil
-      {:params      {:file file}
-       :post-action #(new-card file (get-in % [:result :body :text]))})))
+(defn open-file-as-card
+  ([] (open-file-as-card "src/dev/user.clj"))
+  ([file]
+   (df/load! SPA :text nil
+     {:params      {:file file}
+      :post-action #(new-card file (get-in % [:result :body :text]))})))
+
+(defn open-namespace-as-card [NS]
+   (let [file (get-in @(:com.fulcrologic.fulcro.application/state-atom SPA)
+                [:project-namespaces NS :file])]
+     (when file
+       (df/load! SPA :text nil
+         {:params      {:file file}
+          :post-action #(new-card file (get-in % [:result :body :text]))}))))

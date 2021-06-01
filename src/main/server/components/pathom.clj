@@ -4,6 +4,7 @@
     [server.components.config :refer [config]]
     [clojure.core.async :as async]
     [server.api.editor :as api.editor]
+    [server.api.project :as api.project]
     [com.wsscode.pathom.connect :as pc]
     [com.wsscode.pathom.core :as p]
     [mount.core :refer [defstate]]
@@ -17,7 +18,7 @@
      (update ::pc/index-resolvers #(into {} (map (fn [[k v]] [k (dissoc v ::pc/resolve)])) %))
      (update ::pc/index-mutations #(into {} (map (fn [[k v]] [k (dissoc v ::pc/mutate)])) %)))})
 
-(def all-resolvers [index-explorer api.editor/all-resolvers])
+(def all-resolvers [index-explorer api.editor/all-resolvers api.project/all-resolvers])
 
 (defn preprocess-parser-plugin
   "Helper to create a plugin that can view/modify the env/tx of a top-level request.

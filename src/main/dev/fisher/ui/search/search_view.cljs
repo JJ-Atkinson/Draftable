@@ -1,20 +1,18 @@
 (ns dev.fisher.ui.search.search-view
   (:require
-    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
-    [com.fulcrologic.fulcro.algorithms.normalized-state :as fns :refer [swap!->]]
-    [com.fulcrologic.fulcro.dom :as dom]
-    [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
-    [dev.fisher.ui.action.action-registry :as action-registry]
-    [dev.fisher.ui.keyboard.event-interceptor :as event-interceptor]
-    [dev.fisher.ui.search.search-provider :as search-provider]
     [app.SPA :refer [SPA]]
-    [dev.fisher.fluentui-wrappers :as fui]
-    [com.fulcrologic.fulcro.dom.events :as events]
-    [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
     [clojure.string :as str]
-    [taoensso.timbre :as log]
-    [dev.fisher.ui.action.action-context :as action-context]))
-
+    [com.fulcrologic.fulcro.algorithms.normalized-state :as fns :refer [swap!->]]
+    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
+    [com.fulcrologic.fulcro.dom :as dom]
+    [com.fulcrologic.fulcro.dom.events :as events]
+    [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
+    [com.wsscode.fuzzy :as fuz]
+    [dev.fisher.fluentui-wrappers :as fui]
+    [dev.fisher.ui.action.action-context :as action-context]
+    [dev.fisher.ui.action.action-registry :as action-registry]
+    [dev.fisher.ui.search.search-provider :as search-provider]
+    [taoensso.timbre :as log]))
 
 ;; TASK:  move me out!
 (defn constrain [low n high]
@@ -36,7 +34,7 @@
       (assoc-in [:component/id ::id] {::display?               true
                                       ::active-search-provider type
                                       ::selected-index         0
-                                      ::current-results        []}))))
+                                      ::current-results        {}}))))
 
 (defn count-result-map [current-results]
   (reduce + 0 (map (comp count second) current-results)))
@@ -52,7 +50,7 @@
              (dec (count-result-map current-results))))))))
 
 (defn providers-for
-  "if `:all` returns all providers in a list (unsorted), otherwise selects the 
+  "if `:all` returns all providers in a list (unsorted), otherwise selects the
    search provider by id."
   [selector-or-id]
   (let [all-prov (search-provider/all-search-providers-by-id)]
@@ -64,19 +62,33 @@
   "maximum results from each search provider. Prevent a bunch of dom thrashing."
   40)
 
+(defmutation finish-search [{:keys [provider-id search-input]}]
+  (action [{:keys [state]}]
+    (let [results (->> (keys (get @state :project-namespaces))
+                    (map #(do {::fuz/string %}))
+                    (#(do {::fuz/options      %
+                           ::fuz/search-input search-input}))
+                    (fuz/fuzzy-match))
+          search-provider (first (providers-for provider-id))]
+      (swap!-> state
+        (assoc-in [:component/id ::id ::current-results search-provider] results)
+        (update-in [:component/id ::id ::selected-index]
+          #(constrain 0 % (count results)))))))
+
 (defmutation do-search [{:keys [input]}]
   (action [{:keys [state]}]
-    (let [active-search-provider
-                    (get-in @state [:component/id ::id ::active-search-provider])
+    (let [active-search-provider (get-in @state [:component/id ::id ::active-search-provider])
           providers (providers-for active-search-provider)
-          results   (map (fn [{::search-provider/keys [search-fn]
-                               :as                    search-provider}]
-                           [search-provider
-                            (when-not (str/blank? input)
-                              (take max-results (search-fn input)))])
-                      providers)]
+          results   (->> providers
+                      (map (fn [{::search-provider/keys [search-fn]
+                                 :as                    search-provider}]
+                             [search-provider
+                              (when-not (str/blank? input)
+                                (take max-results (search-fn input)))]))
+                      (remove (comp empty? second))
+                      (into {}))]
       (swap!-> state
-        (assoc-in [:component/id ::id ::current-results] results)
+        (update-in [:component/id ::id ::current-results] merge results)
         (update-in [:component/id ::id ::selected-index]
           #(constrain 0 % (count-result-map results)))))))
 

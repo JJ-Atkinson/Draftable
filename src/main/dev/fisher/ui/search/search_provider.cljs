@@ -1,15 +1,17 @@
 (ns dev.fisher.ui.search.search-provider
   (:require
-    [cljs.spec.alpha :as s]
-    [com.fulcrologic.guardrails.core :refer [>defn =>]]
-    [dev.fisher.ui.action.action-registry :as action-registry]
-    [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
     [app.SPA :refer [SPA]]
+    [cljs.spec.alpha :as s]
     [com.fulcrologic.fulcro.components :as comp]
+    [com.fulcrologic.fulcro.data-fetch :as df]
+    [com.fulcrologic.guardrails.core :refer [>defn =>]]
     [com.wsscode.fuzzy :as fuz]
-    [clojure.string :as str]
-    [taoensso.encore :as enc]
-    [dev.fisher.ui.action.action-context :as action-context]))
+    [dev.fisher.ui.action.action-context :as action-context]
+    [dev.fisher.ui.action.action-registry :as action-registry]
+    [dev.fisher.ui.action.editor :as actions.editor]
+    [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
+    [goog.functions :as goog.fns]
+    [taoensso.encore :as enc]))
 
 (s/def ::id keyword?)
 (s/def ::title string?)
@@ -78,23 +80,19 @@
    ::on-pick                   (fn [s]
                                  ((::action-registry/invoke s)
                                   (action-context)))
-   ::default-keyboard-shortcut ["s" "a"]
-   })
-
-(defonce fisher-nses
-  (->> []; (cljs.repl/apropos #".*") ;; FIXME: not compiling -anthony
-    (map namespace)
-    (filter (fn [x]
-              (str/starts-with? x "dev.fisher")))
-    (set)
-    (map (fn [x] {::fuz/string x}))))
+   ::default-keyboard-shortcut ["s" "a"]})
 
 (register-search-provider!
   {::id                        :search/search-namespaces
    ::title                     "Namespaces"
-   ::search-fn                 (fn [s]
-                                 (fuz/fuzzy-match
-                                   {::fuz/options      fisher-nses
-                                    ::fuz/search-input s}))
-   ::default-keyboard-shortcut ["s" "n"]
-   })
+   ::search-fn                 (goog.fns/debounce
+                                 (fn [s]
+                                   (df/load! SPA :project-namespaces nil
+                                     {:post-mutation 'dev.fisher.ui.search.search-view/finish-search
+                                      :post-mutation-params {:provider-id  :search/search-namespaces
+                                                             :search-input s}})
+                                   nil)
+                                 200)
+   ::on-pick                   (fn [{ns-str :com.wsscode.fuzzy/string}]
+                                 (actions.editor/open-namespace-as-card ns-str))
+   ::default-keyboard-shortcut ["s" "n"]})
