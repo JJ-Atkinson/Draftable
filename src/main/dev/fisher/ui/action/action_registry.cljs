@@ -123,11 +123,11 @@
 (register-action!
   {::id                :action/new-card
    ::title             "New Blank Card"
-   ::invoke            actions.editor/new-card
+   ::invoke            #(actions.editor/new-card)
    ::default-key-combo ["n"]})
 
 (register-action!
   {::id                :action/open-file
    ::title             "Open File"
-   ::invoke            actions.editor/open-file-as-card
+   ::invoke            #(actions.editor/open-file-as-card)
    ::default-key-combo ["o"]})
