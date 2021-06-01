@@ -9,9 +9,10 @@
 
 
 (defsc DebugCard [this props]
-  {:query [::card-content/id
-           '*]
-   :ident ::card-content/id}
+  {:query         [::card-content/id
+                   '*]
+   :initial-state (fn [x] x)
+   :ident         ::card-content/id}
   (dom/pre
     (with-out-str (zprint/zprint props))))
 
@@ -20,6 +21,6 @@
 
 (perspective-registry/register-perspective
   #::perspective-registry{:predicate (constantly true)
-                          :id        (comp/component-name DebugCard)
+                          :id        :perspective/debug
                           :name      "Card Debug"
                           :class     DebugCard})

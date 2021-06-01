@@ -39,7 +39,7 @@
   (action [{:keys [state app]}]
     (let [wm-id (fns/get-in-graph @state [::id wsm-id ::selected-workspace
                                           ::workspace/id])]
-      (comp/transact! app [(workspace/add-card {:wm-id wm-id 
+      (comp/transact! app [(workspace/add-card {:wm-id   wm-id
                                                 :card-id card-id})]))))
 
 
@@ -48,9 +48,9 @@
                    {::workspaces (comp/get-query workspace/WorkspacePanel)}
                    ::selected-workspace ;; ident
                    ]
-   :initial-state {::id         :param/id
-                   ::workspaces [{:id      :primary-ws
-                                  :ui-name "Primary WS"}]
+   :initial-state {::id                 :param/id
+                   ::workspaces         [{:id      :primary-ws
+                                          :ui-name "Primary WS"}]
                    ::selected-workspace [::workspace/id :primary-ws]}
    :ident         ::id}
   (let [[_ selected-ws-id] selected-workspace
@@ -77,8 +77,7 @@
         carddata {::card-data/code  code
                   ::card-content/id cardid}]
     (comp/transact! SPA
-      [(card/set-card-content {:id            cardid
-                               :clazz         code-card/CodeCard
-                               :initial-state (comp/get-initial-state
-                                                code-card/CodeCard carddata)})
+      [(card/set-perspective {:id             cardid
+                              :perspective-id :perspective/code-card
+                              :merge-state    carddata})
        (add-card-to-current-workspace {:wsm-id :ws-manager-singleton :card-id cardid})])))
