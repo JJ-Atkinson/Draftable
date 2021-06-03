@@ -8,7 +8,7 @@
     [dev.fisher.ui.search.search-view :as search-view]
     [dev.fisher.ui.status-bar :as status-bar]
     [dev.fisher.ui.keyboard.whichkey-display :as whichkey-display]
-    [dev.fisher.ui.cards.cards-importer]
+    [dev.fisher.ui.perspectives.perspectives-importer]
     [dev.fisher.fluentui-wrappers :as fui]
     [dev.fisher.ui.keyboard.keyboard-sm :as keyboard-sm]
 

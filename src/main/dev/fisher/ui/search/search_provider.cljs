@@ -10,6 +10,7 @@
     [dev.fisher.ui.action.action-registry :as action-registry]
     [dev.fisher.ui.action.editor :as actions.editor]
     [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
+    [dev.fisher.ui.search.search-view-utils :as search-view-utils]
     [goog.functions :as goog.fns]
     [taoensso.encore :as enc]))
 
@@ -19,10 +20,13 @@
 (s/def ::search-fn ifn?)
 ;; (fn [result] ...)
 (s/def ::on-pick ifn?)
+;; (fn [search-provider-inst search-fn-results highlight-index] html)
+;; highlight-index is not required to be contained within (count search-fn-results)
+(s/def ::result-printer ifn?)
 (s/def ::default-keyboard-shortcut (s/coll-of k-const/str-ified-key-combo?))
 
 (s/def ::search-provider
-  (s/keys :req [::id ::title ::search-fn ::on-pick]
+  (s/keys :req [::id ::title ::search-fn ::on-pick ::result-printer]
     :opt [::default-keyboard-shortcut]))
 
 (defonce
@@ -80,6 +84,8 @@
    ::on-pick                   (fn [s]
                                  ((::action-registry/invoke s)
                                   (action-context)))
+   ::result-printer            (partial search-view-utils/simple-render-results 
+                                 ::fuz/string)
    ::default-keyboard-shortcut ["s" "a"]})
 
 (register-search-provider!
@@ -95,4 +101,6 @@
                                  200)
    ::on-pick                   (fn [{ns-str :com.wsscode.fuzzy/string}]
                                  (actions.editor/open-namespace-as-card ns-str))
+   ::result-printer            (partial search-view-utils/simple-render-results
+                                 ::fuz/string)
    ::default-keyboard-shortcut ["s" "n"]})

@@ -6,11 +6,11 @@
     [dev.fisher.data-model.card-data :as card-data]
     [dev.fisher.ui.card.card :as card]
     [dev.fisher.ui.card.card-content :as card-content]
-    [dev.fisher.ui.cards.code :as code-card]
+    [dev.fisher.ui.perspectives.code :as code-card]
     [dev.fisher.ui.workspaces.workspaces-manager :as wm]))
 
 (defn new-card
-  ([] (new-card "WIP" ";; TODO your code goes here"))
+  ([] (new-card "WIP" ";; TODO your code goes here FRESH EDITZ"))
   ([file code]
    (let [cardid   (gensym)
          carddata {::card-data/code   code
@@ -18,7 +18,7 @@
                    :source-file file}]
      (comp/transact! SPA
        [(card/set-perspective {:id             cardid
-                               :perspective-id :perspective/code-card
+                               :perspective-id :perspective/code
                                :merge-state    carddata})
         (wm/add-card-to-current-workspace {:wsm-id :ws-manager-singleton :card-id cardid})]))))
 

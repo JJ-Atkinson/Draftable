@@ -113,6 +113,18 @@
     border-radius: 2px;
 }
 
+.card-header-wrapper:hover .default-card-header {
+    display: none;
+}
+
+.card-header-wrapper:hover .expanded-card-header {
+    display: flex;
+}
+
+.card-header-wrapper .expanded-card-header {
+    display: none;
+}
+
 .cm-card {
     display: flex;
     flex-direction: column;

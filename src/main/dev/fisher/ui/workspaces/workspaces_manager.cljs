@@ -14,7 +14,7 @@
 
     [dev.fisher.data-model.card-data :as card-data]
     [dev.fisher.ui.card.card-content :as card-content]
-    [dev.fisher.ui.cards.code :as code-card]
+    [dev.fisher.ui.perspectives.code :as code-perspective]
     [app.SPA :refer [SPA]]
     ))
 
@@ -75,9 +75,9 @@
   (let [cardid   (gensym)
         code     ";; I AM Z OR COE"
         carddata {::card-data/code  code
-                  ::card-content/id cardid}]
+                  ::card-content/id (gensym)}]
     (comp/transact! SPA
       [(card/set-perspective {:id             cardid
-                              :perspective-id :perspective/code-card
+                              :perspective-id :perspective/code
                               :merge-state    carddata})
        (add-card-to-current-workspace {:wsm-id :ws-manager-singleton :card-id cardid})])))

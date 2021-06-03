@@ -26,10 +26,25 @@
     :req [::predicate ::class ::name ::id]
     :opt [::initial-state]))
 
-(>defn register-perspective
-  [{::keys [id predicate class name actions] :as perspective-data}]
+(>defn register-perspective!
+  [{::keys [id predicate class name] :as perspective-data}]
   [::perspective => any?]
   (swap! registered-perspectives assoc id perspective-data))
+
+(defn register-custom-perspective!
+  "Register a composite custom perspective. Uses `dev.fisher.ui.perspectives.custom/CustomPerspective`.
+   Like any normal perspective, you provide an id, name, and predicate. The difference is view/transform-id.
+   See CustomPerspective for details."
+  [{::keys [id name predicate view-id transform-id show-options?]
+    :or    {show-options? false}}]
+  (let [CustomPerspective (comp/registry-key->class :dev.fisher.ui.perspectives.custom/CustomPerspective)]
+    (register-perspective!
+      {::id            id ::predicate predicate ::name name
+       ::class         CustomPerspective
+       ::initial-state (comp/get-initial-state CustomPerspective
+                         {:show-options?     show-options?
+                          :default-view      view-id
+                          :default-transform transform-id})})))
 
 
 (defn find-perspective [card-data]
@@ -45,7 +60,7 @@
 
 (defn available-perspectives
   ([] (vals @registered-perspectives))
-  ([data] 
+  ([data]
    (filter (fn [{:as pers ::keys [predicate]}]
              (if predicate (predicate data) pers))
      (available-perspectives))))

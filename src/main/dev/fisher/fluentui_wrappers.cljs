@@ -111,6 +111,10 @@
         (let [updated (map rw-key opts)]
           [(clj->js updated) (into {} (map vector (map :key updated) (map :key opts)))])))))
 
+(defn simple-dropdown-opts 
+  "Create a {:key :text} option map for :options in dropdowns given a seq of maps."
+  [key-k text-k data]
+  (map (fn [x] {:key (get x key-k) :text (get x text-k)}) data))
 
 (let [dropdown-factory (react-interop/react-factory Dropdown)]
   (defn dropdown

@@ -11,7 +11,7 @@
     [com.fulcrologic.fulcro.algorithms.merge :as merge]
     [dev.fisher.ui.card.card-content :as card-content]
     [taoensso.timbre :as log]
-    [dev.fisher.ui.cards.cards-importer]
+    [dev.fisher.ui.perspectives.perspectives-importer]
     [dev.fisher.ui.action.action-context :as action-context]
     [dev.fisher.ui.card.perspective-registry :as perspective-registry]
     [dev.fisher.fluentui-wrappers :as fui]
@@ -88,9 +88,9 @@
                            selected-perspective] :as props
                    :or {backing-data card-content/BlankCard}}]
   {:query                   [::id
+                             ::selected-perspective
                              ;; only used on first load, allows selection of the card class before
                              ;; the card is rendered. (the mutation cannot be called until the card is mounted)
-                             ::selected-perspective
                              ::default-card-clazz
                              ::sub-renderer
                              {::backing-data (comp/get-query card-content/BlankCard)}
@@ -104,23 +104,25 @@
   (let [raw-backing-data (fns/get-in-graph (application/current-state this)
                            [::id id ::backing-data])]
     ;; wrapping div because FUI is stupid and doesn't have onFocus/Blur everywhere
-    (dom/div
-      (assoc (action-context/track-focus-props this ::id {::id id})
-        :style {:width "100%" :height "100%"})
+    (dom/div {:onFocus (fn [_] (action-context/merge-context! this ::id {::id id}))
+              :style   {:width "100%" :height "100%"}}
       (fui/vstack {:verticalFill true
                    :className    "no-cursor"}
-        (fui/hstack {:horizontalAlign "space-between"
-                     :className       "cursor react-grid-layout-handle"}
-          (fui/Mtext "Card header" (str id))
-          (fui/dropdown
-            (fui/with-dropdown-styles
-              {:dropdown {:width 300}}
-              {:placeholder "Card View"
-               :selected    selected-perspective
-               :onChange    #(comp/transact! this
-                               [(set-perspective {:id             id
-                                                  :perspective-id %})])
-               :options     (build-perspective-dropdown (log/spy raw-backing-data))})))
+        (dom/div :.card-header-wrapper
+          (dom/div :.default-card-header
+            (fui/Stext "Perspective: " (perspective-registry/perspective-name selected-perspective)))
+          (fui/hstack {:horizontalAlign "space-between"
+                       :className       "cursor react-grid-layout-handle expanded-card-header"}
+            (fui/Mtext "Card header" (str id))
+            (fui/dropdown
+              (fui/with-dropdown-styles
+                {:dropdown {:width 300}}
+                {:placeholder "Card View"
+                 :selected    selected-perspective
+                 :onChange    #(comp/transact! this
+                                 [(set-perspective {:id             id
+                                                    :perspective-id %})])
+                 :options     (build-perspective-dropdown raw-backing-data)}))))
 
         (if (and (not (class-query-initialized? this id)) default-card-clazz)
           (do (comp/transact!! this [(set-card-content {:id            id

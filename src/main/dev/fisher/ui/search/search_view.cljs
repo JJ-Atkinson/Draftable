@@ -132,19 +132,6 @@
                       :className "search-panel")
           content)))))
 
-(defn simple-render-results [{::search-provider/keys [title] :as search-provider}
-                             results
-                             highlight-index]
-  (when (seq results)
-    (apply comp/fragment
-      (dom/div :.result-header title)
-      (map-indexed
-        (fn [idx {:as map s :com.wsscode.fuzzy/string}]
-          (dom/div :.result
-            {:key     (hash map)
-             :classes [(when (= highlight-index idx) "active")]} s))
-        results))))
-
 (defsc SearchView [this {::keys [display? current-results selected-index
                                  active-search-provider] :as props}]
   {:query         [::display?
@@ -177,8 +164,8 @@
             ;; mess, but I don't want to fix right now :/
             (first
               (reduce
-                (fn [[out cnt] [prov res]]
-                  [(conj out (simple-render-results prov res (- selected-index cnt)))
+                (fn [[out cnt] [{::search-provider/keys [result-printer] :as prov} res]]
+                  [(conj out (result-printer prov res (- selected-index cnt)))
                    (+ cnt (count res))])
                 [[] 0]
                 current-results))))))))

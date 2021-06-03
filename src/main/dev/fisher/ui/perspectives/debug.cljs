@@ -1,4 +1,4 @@
-(ns dev.fisher.ui.cards.debug
+(ns dev.fisher.ui.perspectives.debug
   (:require
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom :as dom]
@@ -8,7 +8,7 @@
     [dev.fisher.ui.card.perspective-registry :as perspective-registry]))
 
 
-(defsc DebugCard [this props]
+(defsc DebugPerspective [this props]
   {:query         [::card-content/id
                    '*]
    :initial-state (fn [x] x)
@@ -17,10 +17,10 @@
     (with-out-str (zprint/zprint props))))
 
 
-(def ui-debug-card (comp/factory DebugCard {:keyfn card-content/content-ident-key}))
+(def ui-debug-perspective (comp/factory DebugPerspective {:keyfn card-content/content-ident-key}))
 
-(perspective-registry/register-perspective
+(perspective-registry/register-perspective!
   #::perspective-registry{:predicate (constantly true)
                           :id        :perspective/debug
                           :name      "Card Debug"
-                          :class     DebugCard})
+                          :class     DebugPerspective})

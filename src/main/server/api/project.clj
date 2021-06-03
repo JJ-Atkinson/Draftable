@@ -5,6 +5,10 @@
     [server.pathom-wrappers :refer [defresolver]]
     [taoensso.encore :as enc]))
 
+(comment
+  (-> {:lint ["src"] :config {:output {:analysis true}}}
+    (kondo/run!)))
+
 (defn all-project-ns []
   (->> {:lint ["src"] :config {:output {:analysis true}}}
     (kondo/run!)
