@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   width="105"
-   height="105"
+   width="110"
+   height="96"
    version="1.1"
    id="svg33"
    sodipodi:docname="logo.svg"
@@ -23,13 +23,13 @@
      showgrid="false"
      inkscape:snap-nodes="false"
      inkscape:snap-others="false"
-     inkscape:zoom="12.081424"
-     inkscape:cx="52.518642"
-     inkscape:cy="60.71304"
-     inkscape:window-width="1418"
-     inkscape:window-height="1081"
-     inkscape:window-x="309"
-     inkscape:window-y="2007"
+     inkscape:zoom="10.683228"
+     inkscape:cx="40.015995"
+     inkscape:cy="47.73838"
+     inkscape:window-width="2560"
+     inkscape:window-height="1440"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg33" />
   <style
@@ -37,7 +37,8 @@
      id="style9">.stick { stroke-width:3; } </style>
   <g
      id="line11"
-     class="stick">
+     class="stick"
+     transform="matrix(1.0316132,0,0,1.0316132,1.348846,-12.360509)">
     <path
        style="color:#000000;fill:#000000;stroke-width:3;-inkscape-stroke:none"
        d="M 2,102 84.635185,71.923256"
@@ -49,7 +50,8 @@
   </g>
   <g
      id="line13"
-     class="stick">
+     class="stick"
+     transform="matrix(1.0316132,0,0,1.0316132,1.348846,-12.360509)">
     <path
        style="color:#000000;fill:#000000;stroke-width:3;-inkscape-stroke:none"
        d="M 102,102 19.364819,71.923256"
@@ -61,7 +63,8 @@
   </g>
   <g
      id="line15"
-     class="stick">
+     class="stick"
+     transform="matrix(1.0316132,0,0,1.0316132,1.348846,-12.360509)">
     <path
        style="color:#000000;fill:#000000;stroke-width:3;-inkscape-stroke:none"
        d="M 2,102 77,58.69873"
@@ -73,7 +76,8 @@
   </g>
   <g
      id="line17"
-     class="stick">
+     class="stick"
+     transform="matrix(1.0316132,0,0,1.0316132,1.348846,-12.360509)">
     <path
        style="color:#000000;fill:#000000;stroke-width:3;-inkscape-stroke:none"
        d="M 102,102 27,58.69873"
@@ -85,7 +89,8 @@
   </g>
   <g
      id="line19"
-     class="stick">
+     class="stick"
+     transform="matrix(1.0316132,0,0,1.0316132,1.348846,-12.360509)">
     <path
        style="color:#000000;fill:#000000;stroke-width:3;-inkscape-stroke:none"
        d="M 2,102 69.364815,45.474205"
@@ -97,7 +102,8 @@
   </g>
   <g
      id="line21"
-     class="stick">
+     class="stick"
+     transform="matrix(1.0316132,0,0,1.0316132,1.348846,-12.360509)">
     <path
        style="color:#000000;fill:#000000;stroke-width:3;-inkscape-stroke:none"
        d="M 102,102 34.635181,45.474205"
@@ -109,7 +115,8 @@
   </g>
   <g
      id="line23"
-     class="stick">
+     class="stick"
+     transform="matrix(1.0316132,0,0,1.0316132,1.348846,-12.360509)">
     <path
        style="color:#000000;fill:#000000;stroke-width:3;-inkscape-stroke:none"
        d="M 2,102 61.239628,31.400963"
@@ -121,7 +128,8 @@
   </g>
   <g
      id="line25"
-     class="stick">
+     class="stick"
+     transform="matrix(1.0316132,0,0,1.0316132,1.348846,-12.360509)">
     <path
        style="color:#000000;fill:#000000;stroke-width:3;-inkscape-stroke:none"
        d="M 102,102 42.760372,31.400963"
@@ -133,7 +141,8 @@
   </g>
   <g
      id="line27"
-     class="stick">
+     class="stick"
+     transform="matrix(1.0316132,0,0,1.0316132,1.348846,-12.360509)">
     <path
        style="color:#000000;fill:#000000;stroke-width:3;-inkscape-stroke:none"
        d="M 2,102 52,15.39746"
@@ -145,7 +154,8 @@
   </g>
   <g
      id="line29"
-     class="stick">
+     class="stick"
+     transform="matrix(1.0316132,0,0,1.0316132,1.348846,-12.360509)">
     <path
        style="color:#000000;fill:#000000;stroke-width:3;-inkscape-stroke:none"
        d="M 102,102 52,15.39746"
@@ -156,8 +166,8 @@
        id="path755" />
   </g>
   <path
-     style="color:#000000;fill:#504695;-inkscape-stroke:none"
-     d="M 52,11.992188 -1.1217586,104.3145 3.0392628,103.46147 52,18.593074 l 49.07247,85.065406 3.95331,0.54173 z"
+     style="color:#000000;fill:#504695;stroke-width:1.03161;-inkscape-stroke:none"
+     d="M 54.992734,0.01079062 0.09639404,95.505663 4.4524461,94.181247 54.992734,6.5981466 105.53723,94.146605 l 4.52249,1.605923 z"
      id="polyline31"
      sodipodi:nodetypes="ccccccc" />
 </svg>
