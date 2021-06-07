@@ -17,8 +17,9 @@
                                            :exclusions  [org.clojure/tools.reader]}
            medley/medley                  {:mvn/version "1.3.0"}
            better-cond/better-cond        {:mvn/version "2.1.0"}
-           meander/epsilon                {:mvn/version "0.0.469"}
+           meander/epsilon                {:mvn/version "0.0.602"}
            zprint/zprint                  {:mvn/version "0.5.3"}
+           philoskim/debux                {:mvn/version "0.7.9"}
            dev.freeformsoftware/metacomet {:git/url "https://github.com/JJ-Atkinson/metacomet.git"
                                            :sha     "f738fc49092bbd39c14904d7b60f03110d875a6b"}
 

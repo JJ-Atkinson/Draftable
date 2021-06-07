@@ -88,8 +88,10 @@
   "Change out the document object stored in the app db. Usually only useful if
    the CodeMirror is not mounted, since codemirror is not a controlled component.
    See `reset-text` for a version that immediately changes the ui OR updates the db."
-  [{:as props ::keys [id doc-object]}]
+  [{:as props ::keys [id doc-object cm-object]}]
   (action [{:keys [state app]}]
+    (js/console.log (nextjournal.clojure-mode.extensions.eval-region/cursor-node-string (.-state cm-object)))
+    (js/console.log (nextjournal.clojure-mode.extensions.eval-region/top-level-string (.-state cm-object)))
     (swap! state assoc-in [::id id ::doc-object] doc-object)))
 
 (defn text-of*
@@ -141,7 +143,9 @@
                   (when-not (gobj/get this "cm-inst")
                     (let [new-inst (-mount-cm ref (or doc-object initial-code "")
                                      #(comp/transact! this [(-update-text-object
-                                                              {::id id ::doc-object (-doc-of %)})]))]
+                                                              {::id         id
+                                                               ::doc-object (-doc-of %)
+                                                               ::cm-object  %})]))]
                       (swap! -mounted-cm-instances assoc id new-inst)
                       (gobj/set this "cm-inst"
                         ;; since we may be re-mounting, doc-object could be populated
