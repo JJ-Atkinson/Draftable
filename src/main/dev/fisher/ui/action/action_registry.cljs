@@ -127,3 +127,36 @@
    ::title             "Open File"
    ::invoke            #(actions.editor/open-file-as-card)
    ::default-key-combo ["o"]})
+
+(defn eval-str [NS s]
+  (js/console.log "CLJS_EVAL:" (pr-str NS) s)
+  (-> (js/cljs_eval {:code s :ns NS})
+    ;; TODO: put into repl card
+    (.then prn)
+    (.catch prn))
+  nil)
+
+(defn context->cm-state [context]
+  (.-state (get-in context [:dev.fisher.ui.editor.codemirror-core/id
+                            :dev.fisher.ui.editor.codemirror-core/cm-object])))
+
+(defn context->ns [context]
+  (get-in context
+    [:dev.fisher.ui.perspectives.code/id
+     :dev.fisher.data-model.card-data/namespace]))
+
+(register-action!
+  {::id                :action/eval-current-form
+   ::title             "Eval Current Form"
+   ::invoke            #(eval-str (context->ns %)
+                          (nextjournal.clojure-mode.extensions.eval-region/cursor-node-string
+                            (context->cm-state %)))
+   ::default-key-combo ["e" "e"]})
+
+(register-action!
+  {::id                :action/eval-root-form
+   ::title             "Eval Root Form"
+   ::invoke            #(eval-str (context->ns %)
+                          (nextjournal.clojure-mode.extensions.eval-region/top-level-string
+                            (context->cm-state %)))
+   ::default-key-combo ["e" "r"]})

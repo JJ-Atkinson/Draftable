@@ -72,9 +72,9 @@
 
 (defn class-query-initialized?
   "roundabout hack to prevent running the first frame of ::sub-renderer with the wrong
-   query. The first frame of Card will have the wrong query, and if a sub-renderer is 
-   provided before the first frame of Card (re-mounting card, mounting new card with 
-   a default view, etc) the query *will* be wrong, providing the wrong initial-data 
+   query. The first frame of Card will have the wrong query, and if a sub-renderer is
+   provided before the first frame of Card (re-mounting card, mounting new card with
+   a default view, etc) the query *will* be wrong, providing the wrong initial-data
    to the ::sub-renderer."
   [appish cardid]
   (some->

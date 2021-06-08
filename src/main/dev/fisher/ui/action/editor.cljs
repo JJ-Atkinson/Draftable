@@ -11,11 +11,12 @@
 
 (defn new-card
   ([] (new-card "WIP" ";; TODO your code goes here FRESH EDITZ"))
-  ([file code]
-   (let [cardid   (gensym)
-         carddata {::card-data/code   code
-                   ::card-content/id  cardid
-                   :source-file file}]
+  ([file {{code :text NS :namespace} :file}]
+   (let [cardid   (gensym "CARD_")
+         carddata {::card-data/code      code
+                   ::card-data/namespace NS
+                   ::card-content/id     cardid
+                   :source-file          file}]
      (comp/transact! SPA
        [(card/set-perspective {:id             cardid
                                :perspective-id :perspective/code
@@ -25,14 +26,14 @@
 (defn open-file-as-card
   ([] (open-file-as-card "src/dev/user.clj"))
   ([file]
-   (df/load! SPA :text nil
+   (df/load! SPA :file nil
      {:params      {:file file}
-      :post-action #(new-card file (get-in % [:result :body :text]))})))
+      :post-action #(new-card file (get-in % [:result :body]))})))
 
 (defn open-namespace-as-card [NS]
    (let [file (get-in @(:com.fulcrologic.fulcro.application/state-atom SPA)
                 [:project-namespaces NS :file])]
      (when file
-       (df/load! SPA :text nil
+       (df/load! SPA :file nil
          {:params      {:file file}
-          :post-action #(new-card file (get-in % [:result :body :text]))}))))
+          :post-action #(new-card file (get-in % [:result :body]))}))))

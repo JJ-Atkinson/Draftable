@@ -29,12 +29,12 @@
 ;; TASK: handle :or lets
 (defn rewrite-lhs-let
   "In:
-  
-   x 
+
+   x
    {:keys [x] :as a}
    [{{:keys [n m]} :as inner} _ third]
-   
-   Out: 
+
+   Out:
    [^:id x [x]]
    [{:keys [^:id x] :as ^:id a} [x a]]
    [[{{:keys [^:id n ^:id m]} :as ^:id inner} ^:id _ ^:id third]
@@ -51,7 +51,7 @@
      @seen]))
 
 (defn unzipmap
-  "Turn a vector of pairs into a pair of vectors. 
+  "Turn a vector of pairs into a pair of vectors.
    [[a1 b1] [a2 b2]] => [[a1 a2] [b1 b]]"
   [coll]
   (reduce (fn [[as bs] [a b]] [(conj as a) (conj bs b)])
@@ -126,23 +126,26 @@
 (let [a 8]
   (inc (nn 1 4)))
 
-(zprint/zprint-file-str 
-  (with-out-str
-    (prm '(let [a 1
-                k (complicated (inner
-                                 (function does nothing)))
-                b 2]
-            (-> 4
-              (a 88)
-              (b)))))
-  )
-(prm '(let [a 1
-            k (complicated (inner 
+(comment
+  (zprint/zprint-file-str
+    (with-out-str
+      (prm '(let [a 1
+                  k (complicated (inner
+                                   (function does nothing)))
+                  b 2]
+              (-> 4
+                (a 88)
+                (b)))))
+    ))
+
+(comment
+  (prm '(let [a 1
+            k (complicated (inner
                              (function does nothing)))
             b 2]
         (-> 4
           (a 88)
-          (b))))
+          (b)))))
 
 
 

@@ -67,6 +67,9 @@
 ;; id -> instance
 (defonce -mounted-cm-instances (atom {}))
 
+(defn get-cm-inst-by-id [id]
+  (get @-mounted-cm-instances id))
+
 (defn -doc-of [cm-or-txn]
   (-> cm-or-txn (.-state) (.-doc)))
 
@@ -90,8 +93,8 @@
    See `reset-text` for a version that immediately changes the ui OR updates the db."
   [{:as props ::keys [id doc-object cm-object]}]
   (action [{:keys [state app]}]
-    (js/console.log (nextjournal.clojure-mode.extensions.eval-region/cursor-node-string (.-state cm-object)))
-    (js/console.log (nextjournal.clojure-mode.extensions.eval-region/top-level-string (.-state cm-object)))
+    ;(js/console.log (nextjournal.clojure-mode.extensions.eval-region/cursor-node-string (.-state cm-object)))
+    ;(js/console.log (nextjournal.clojure-mode.extensions.eval-region/top-level-string (.-state cm-object)))
     (swap! state assoc-in [::id id ::doc-object] doc-object)))
 
 (defn text-of*
@@ -108,7 +111,7 @@
                       :text (text-of* @state id)}))))
 
 (defn reset-text! [{:keys [state app]} {::keys [id code-str]}]
-  (if-let [cm-inst (get @-mounted-cm-instances id)]
+  (if-let [cm-inst (get-cm-inst-by-id id)]
     (-cm-update-doc-object cm-inst code-str)
     ;; if it's not mounted, update the cold storage at least
     (comp/transact! app [(-update-text-object {::id id ::doc-object code-str})])))
@@ -168,10 +171,14 @@
         "LOAD FROM DISK")
       (fui/primary-button {:onClick #(comp/transact! this [(save-text props)])}
         (str "SAVE-" (::id props))))
-    (dom/div (assoc (action-context/track-focus-props this ::id {::id (::id props)})
-               :classes ["cm-editor-root rounded-md mb-0"
-                         "text-sm monospace overflow-auto relative"
-                         "border shadow-lg bg-white"]
-               :ref (comp/get-state this :save-ref)))))
+    (dom/div (-> (action-context/track-focus-props this ::id
+                   {::id (::id props)
+                    ::cm-object (gobj/get this "cm-inst")})
+               (dissoc :onBlur)
+               (assoc
+                 :classes ["cm-editor-root rounded-md mb-0"
+                           "text-sm monospace overflow-auto relative"
+                           "border shadow-lg bg-white"]
+                 :ref (comp/get-state this :save-ref))))))
 
 (def ui-code-mirror (comp/factory CodeMirror {:keyfn ::id}))

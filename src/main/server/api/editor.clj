@@ -1,5 +1,6 @@
 (ns server.api.editor
   (:require
+    [clj-kondo.core :as kondo]
     [clojure.java.io :as io]
     [com.wsscode.pathom.connect :as pc]
     [server.pathom-wrappers :refer [defmutation defresolver]]
@@ -8,11 +9,17 @@
 (def project-dir (System/getProperty "user.dir"))
 
 (defresolver open-file [{{:keys [file]} :query-params} _]
-  {::pc/output [:text]}
+  {::pc/output [:file]}
   (log/infof "OPEN_TEXT %s" file)
-  {:text (try (slurp (str project-dir "/" file))
-           (catch java.io.FileNotFoundException _
-             "FILE NOT FOUND"))})
+  (try {:file {:text      (slurp (str project-dir "/" file))
+               ;; TODO: only do if clojure file
+               :namespace (-> (kondo/run! {:lint [file] :config {:output {:analysis true}}})
+                            :analysis
+                            :namespace-definitions
+                            first
+                            :name)}}
+    (catch java.io.FileNotFoundException _
+      {:text "FILE NOT FOUND"})))
 
 (defmutation save-text [env {:keys [file text]}]
   {::pc/input #{:file :text}}

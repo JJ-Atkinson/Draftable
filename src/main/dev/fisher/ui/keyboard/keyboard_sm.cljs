@@ -38,9 +38,11 @@
         (action-registry/shortcut-group-descriptions)))))
 
 (defn invoke-action [env action]
-  ((::action-registry/invoke action)
-   (-> env ::uism/state-map
-     (action-context/action-context*))))
+  (try ((::action-registry/invoke action)
+        (-> env ::uism/state-map
+          (action-context/action-context*)))
+    (catch :default e
+      (js/console.error e))))
 
 (def whichkey-display-delay 900)
 
@@ -54,7 +56,7 @@
     whichkey-display-delay))
 
 (defn update-stack
-  "Update the keystack in local storage and in the status bar, and update the keymap in both 
+  "Update the keystack in local storage and in the status bar, and update the keymap in both
    the local storage and in whichkey. If the appended item results in an action being invoked,
    the action is invoked and the UISM is reset with `key-event-completed` and `(update-stack nil)`"
   [env append? & [reset-key-map?]]
@@ -117,7 +119,7 @@
         (fn [{{:keys [key-desc]} ::uism/event-data :as env}]
           (-> env
             (uism/activate :state/listening)
-            ;; reset the keymap to default if space is hit. This allows 
+            ;; reset the keymap to default if space is hit. This allows
             ;; the command "c" to be invoked either by "c" or by "SPC c"
             (update-stack key-desc (= key-desc start-key))
             (timeout-show-whichkey))))

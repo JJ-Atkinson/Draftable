@@ -6,8 +6,13 @@
     [taoensso.encore :as enc]))
 
 (comment
-  (-> {:lint ["src"] :config {:output {:analysis true}}}
-    (kondo/run!)))
+  (-> (kondo/run!
+        {:lint ["src/dev/user.clj"] :config {:output {:analysis true}}})
+    :analysis
+    :namespace-definitions
+    first
+    :name)
+  )
 
 (defn all-project-ns []
   (->> {:lint ["src"] :config {:output {:analysis true}}}
