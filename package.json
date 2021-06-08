@@ -1,5 +1,5 @@
 {
-  "name": "draftable",
+  "name": "Fisher",
   "version": "0.0.1-alpha",
   "description": "In design Clojure(Script) editor",
   "main": "index.js",
