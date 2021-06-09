@@ -32,16 +32,13 @@
           key-and-root       (aget st 0)
           setRoot!           (aget st 1)
           child-factory-st   (useState nil)
-          _                  (println "adding set child factory")
+          ;_                  (println "adding set child factory")
           setChildFactory!   (aget child-factory-st 1)
           _                  (use-lifecycle
                                (fn setup* []
                                  (let [join-key      (aget key-and-root 0)
                                        child-factory (comp/factory child-class {:qualifier join-key})
                                        initial-state (comp/get-initial-state child-class (or initial-state-params {}))
-                                       _             (println [:compfact
-                                                               child-class
-                                                               key-and-root])
                                        cls           (comp/configure-hooks-component!
                                                        (fn [this fulcro-props]
                                                          (use-lifecycle
@@ -61,7 +58,7 @@
                                                          (reset! pass-through-props props)
                                                          (real-factory {}))
                                                        (meta real-factory))]
-                                   (println "setting child factory now!")
+                                   ;(println "setting child factory now!")
                                    (setChildFactory! child-factory)
                                    (setRoot! #js [join-key factory])))
                                (fn teardown* []

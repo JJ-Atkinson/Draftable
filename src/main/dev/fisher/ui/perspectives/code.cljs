@@ -2,7 +2,7 @@
   (:require
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.dom :as dom]
-    [dev.fisher.ui.card.card-content :as card-content]
+    
     [dev.fisher.data-model.card-data :as card-data]
     [dev.fisher.ui.action.action-context :as action-context]
     [dev.fisher.ui.editor.codemirror-core :as codemirror]
@@ -10,16 +10,16 @@
 
 
 (defsc CodePerspective [this {::keys [codemirror] :as props}]
-  {:query         [::card-content/id
+  {:query         [::card-data/id
                    ::card-data/code
                    ::card-data/namespace
                    {::codemirror (comp/get-query codemirror/CodeMirror)}]
-   :ident         ::card-content/id
+   :ident         ::card-data/id
    :initial-state (fn [{:as   props
-                        :keys [::card-content/id
+                        :keys [::card-data/id
                                ::card-data/code
                                ::card-data/namespace]}]
-                    {::card-content/id id
+                    {::card-data/id id
                      ::card-data/code  code
                      ::card-data/namespace namespace
                      ::codemirror      (comp/get-initial-state codemirror/CodeMirror
@@ -28,10 +28,11 @@
                                             :initial-code code}))})}
   (dom/div
     (-> (action-context/track-focus-props this ::id props)
-      (dissoc :onBlur))
+      (dissoc :onBlur)
+      (assoc :style {:max-height "100%"}))
     (codemirror/ui-code-mirror codemirror)))
 
-(def ui-code-perspective (comp/factory CodePerspective {:keyfn card-content/content-ident-key}))
+(def ui-code-perspective (comp/factory CodePerspective {:keyfn card-data/content-ident-key}))
 
 (perspective-registry/register-perspective!
   #::perspective-registry{:predicate     (fn [x] (contains? x ::card-data/code))

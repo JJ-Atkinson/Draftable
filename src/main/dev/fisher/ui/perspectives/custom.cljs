@@ -1,7 +1,7 @@
 (ns dev.fisher.ui.perspectives.custom
   (:require
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
-    [dev.fisher.ui.card.card-content :as card-content]
+    
     [dev.fisher.data-model.card-data :as card-data]
     [dev.fisher.ui.editor.codemirror-core :as codemirror]
     [dev.fisher.ui.card.perspective-registry :as perspective-registry]
@@ -13,12 +13,12 @@
 
 
 (defsc CustomPerspective [this {::keys [selected-view selected-transform show-options?] :as props}]
-  {:query         [::card-content/id
+  {:query         [::card-data/id
                    ::selected-view
                    ::selected-transform
                    ::show-options?
                    '*]
-   :ident         ::card-content/id
+   :ident         ::card-data/id
    :initial-state (fn [{:keys [default-view default-transform show-options?]
                         :or   {show-options? true}}]
                     (enc/assoc-some {::show-options? show-options?}
@@ -47,7 +47,7 @@
         (wrap-dropdown res)
         res))))
 
-(def ui-custom-perspective (comp/factory CustomPerspective {:keyfn card-content/content-ident-key}))
+(def ui-custom-perspective (comp/factory CustomPerspective {:keyfn card-data/content-ident-key}))
 
 (perspective-registry/register-perspective!
   #::perspective-registry{:id            :perspective/custom

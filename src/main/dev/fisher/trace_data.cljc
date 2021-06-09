@@ -1,4 +1,9 @@
-(ns dev.fisher.trace-data)
+(ns dev.fisher.trace-data
+  #?(:cljs
+     (:require
+       [dev.fisher.data-model.card-data :as card-data]
+       [com.fulcrologic.fulcro.components :as comp]
+       [app.SPA :refer [SPA]])))
 
 
 ;;             capture group
@@ -19,3 +24,13 @@
   value)
 
 (defn capture>> [meta-map value] (capture> value meta-map))
+
+#?(:cljs
+   (defn complete-trace [fn-name]
+     (comp/transact! SPA [(card-data/attach-card-info
+                            {::card-data/id                [:function fn-name]
+                             ::card-data/latest-evaluation (get @latest-evals-atom fn-name)})]))
+
+   :clj
+   (defn complete-trace [fn-name]
+     nil))

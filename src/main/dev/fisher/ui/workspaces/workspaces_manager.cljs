@@ -13,7 +13,7 @@
     [com.fulcrologic.fulcro.algorithms.merge :as merge]
 
     [dev.fisher.data-model.card-data :as card-data]
-    [dev.fisher.ui.card.card-content :as card-content]
+    
     [dev.fisher.ui.perspectives.code :as code-perspective]
     [app.SPA :refer [SPA]]
     ))
@@ -75,7 +75,7 @@
   (let [cardid   (gensym)
         code     ";; I AM Z OR COE"
         carddata {::card-data/code  code
-                  ::card-content/id (gensym)}]
+                  ::card-data/id (gensym)}]
     (comp/transact! SPA
       [(card/set-perspective {:id             cardid
                               :perspective-id :perspective/code

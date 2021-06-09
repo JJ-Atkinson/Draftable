@@ -2,4 +2,5 @@
   (:require
     [dev.fisher.ui.perspectives.code]
     [dev.fisher.ui.perspectives.debug]
-    [dev.fisher.ui.perspectives.custom]))
+    [dev.fisher.ui.perspectives.custom]
+    [dev.fisher.ui.perspectives.code-debug]))

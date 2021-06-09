@@ -10,8 +10,8 @@
     [taoensso.timbre :as log]
     [taoensso.encore :as enc]
     [dev.fisher.ui.action.action-context :as action-context]
-    [debux.cs.core :as d :refer-macros [clog clogn dbg dbgn break
-                                        clog_ clogn_ dbg_ dbgn_ break_]]
+    [dev.fisher.fn-trace-impl :as trace]
+    [dev.fisher.trace-data]
     ))
 
 
@@ -41,8 +41,8 @@
   (try ((::action-registry/invoke action)
         (-> env ::uism/state-map
           (action-context/action-context*)))
-    (catch :default e
-      (js/console.error e))))
+       (catch :default e
+         (js/console.error e))))
 
 (def whichkey-display-delay 900)
 
@@ -55,36 +55,37 @@
     :event/show-whichkey {}
     whichkey-display-delay))
 
-(defn update-stack
-  "Update the keystack in local storage and in the status bar, and update the keymap in both
-   the local storage and in whichkey. If the appended item results in an action being invoked,
-   the action is invoked and the UISM is reset with `key-event-completed` and `(update-stack nil)`"
-  [env append? & [reset-key-map?]]
-  (let [new-stack
-        (if append?
-          (conj (uism/retrieve env ::current-key-stack) append?)
-          [])
+(trace/capture
+  (defn update-stack
+    "Update the keystack in local storage and in the status bar, and update the keymap in both
+     the local storage and in whichkey. If the appended item results in an action being invoked,
+     the action is invoked and the UISM is reset with `key-event-completed` and `(update-stack nil)`"
+    [env append? & [reset-key-map?]]
+    (let [new-stack
+          (if append?
+            (conj (uism/retrieve env ::current-key-stack) append?)
+            [])
 
-        new-key-command-map
-        (if (and append? (not reset-key-map?))
-          (get (uism/retrieve env ::current-key-command-map) append?)
-          (build-action-map env))]
-    (cond
-      (nil? new-key-command-map)
-      (key-event-completed env)
+          new-key-command-map
+          (if (and append? (not reset-key-map?))
+            (get (uism/retrieve env ::current-key-command-map) append?)
+            (build-action-map env))]
+      (cond
+        (nil? new-key-command-map)
+        (key-event-completed env)
 
-      (action-registry/action? new-key-command-map)
-      (do (invoke-action env new-key-command-map)
-          (-> env
-            (key-event-completed)
-            (update-stack nil)))
+        (action-registry/action? new-key-command-map)
+        (do (invoke-action env new-key-command-map)
+            (-> env
+              (key-event-completed)
+              (update-stack nil)))
 
-      :else
-      (-> env
-        (uism/assoc-aliased :status-key-stack new-stack)
-        (uism/store ::current-key-stack new-stack)
-        (uism/assoc-aliased :whichkey-contents-map new-key-command-map)
-        (uism/store ::current-key-command-map new-key-command-map)))))
+        :else
+        (-> env
+          (uism/assoc-aliased :status-key-stack new-stack)
+          (uism/store ::current-key-stack new-stack)
+          (uism/assoc-aliased :whichkey-contents-map new-key-command-map)
+          (uism/store ::current-key-command-map new-key-command-map))))))
 
 (defn key-event-completed [env]
   (-> env

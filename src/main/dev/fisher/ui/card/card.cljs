@@ -9,7 +9,7 @@
     [com.fulcrologic.fulcro.react.hooks :as hooks]
     [dev.fisher.ui.card.impl-fulcro-floating-root :as *floating-root]
     [com.fulcrologic.fulcro.algorithms.merge :as merge]
-    [dev.fisher.ui.card.card-content :as card-content]
+    [dev.fisher.data-model.card-data :as card-data]
     [taoensso.timbre :as log]
     [dev.fisher.ui.perspectives.perspectives-importer]
     [dev.fisher.ui.action.action-context :as action-context]
@@ -23,15 +23,22 @@
   card-root-factory-registry
   (atom {}))
 
-(defn set-card-content* [state-atom app* id clazz initial-state]
+(defn -set-card-content*
+  "Internal implementation detail of how perspectives are set on cards"
+  [state-atom app* id clazz initial-state]
   (if-not clazz
     (log/error nil "Card with [id] cannot have it's content set to a nil class" id)
-    (let [factory   (comp/factory clazz)
-          new-state (swap!-> state-atom
-                      (assoc-in [::id id ::sub-renderer] factory)
-                      (assoc-in [::id id ::default-card-clazz] clazz)
-                      (merge/merge-component clazz (log/spy (assoc initial-state
-                                                              card-content/content-ident-key id))))]
+    (let [factory           (comp/factory clazz)
+          _                 (log/spy id)
+          curr-card-data-id (log/spy (get-in @state-atom [::id id ::backing-data 1]))
+          new-state         (swap!-> state-atom
+                              (assoc-in [::id id ::sub-renderer] factory)
+                              (assoc-in [::id id ::default-card-clazz] clazz)
+                              (merge/merge-component clazz (log/spy (enc/assoc-nx (log/spy initial-state)
+                                                                      card-data/content-ident-key
+                                                                      (or curr-card-data-id id)))
+                                :replace [::id id ::backing-data]))
+          _                 (log/spy [:nbd (get-in @state-atom [::id id ::backing-data 1])])]
 
       ;; using the ! version because it has the indexing information built in
       (when-let [class-query-factory (get @card-root-factory-registry id)]
@@ -43,9 +50,9 @@
                    {::backing-data (comp/get-query clazz)}]}))
       new-state)))
 
-(defmutation set-card-content [{:keys [id clazz initial-state]}]
+(defmutation -set-card-content [{:keys [id clazz initial-state]}]
   (action [{:keys [state app]}]
-    (set-card-content* state app id clazz initial-state)))
+    (-set-card-content* state app id clazz (log/spy initial-state))))
 
 (defn set-perspective* [state-atom app* id perspective-id merge-state]
   (let [{::perspective-registry/keys [class]}
@@ -55,7 +62,7 @@
                      perspective-id
                      (merge (fns/get-in-graph @state-atom [::id id ::backing-data])
                        merge-state))]
-    (set-card-content* state-atom app* id class init-state)
+    (-set-card-content* state-atom app* id class (log/spy init-state))
     (swap!-> state-atom
       (assoc-in [::id id ::selected-perspective] perspective-id))))
 
@@ -86,20 +93,20 @@
 
 (defsc Card [this {::keys [id backing-data sub-renderer default-card-clazz
                            selected-perspective] :as props
-                   :or {backing-data card-content/BlankCard}}]
+                   :or {backing-data card-data/BlankCard}}]
   {:query                   [::id
                              ::selected-perspective
                              ;; only used on first load, allows selection of the card class before
                              ;; the card is rendered. (the mutation cannot be called until the card is mounted)
                              ::default-card-clazz
                              ::sub-renderer
-                             {::backing-data (comp/get-query card-content/BlankCard)}
+                             {::backing-data (comp/get-query card-data/BlankCard)}
                              ::un-initialized-query]
    :ident                   ::id
    ;; both this and the card content share the same id -- different tables though
-   :initial-state           (fn [{:keys [id]}]
+   :initial-state           (fn [{:keys [id content-id]}]
                               {::id           id
-                               ::backing-data {card-content/content-ident-key id}})
+                               #_#_::backing-data {card-data/content-ident-key id}})
    :preserve-dynamic-query? true}
   (let [raw-backing-data (fns/get-in-graph (application/current-state this)
                            [::id id ::backing-data])]
@@ -125,9 +132,10 @@
                  :options     (build-perspective-dropdown raw-backing-data)}))))
 
         (if (and (not (class-query-initialized? this id)) default-card-clazz)
-          (do (comp/transact!! this [(set-card-content {:id            id
-                                                        :clazz         default-card-clazz
-                                                        :initial-state {}})])
+          (do (comp/transact!! this [(-set-card-content {:id            id
+                                                         :clazz         default-card-clazz
+                                                         :initial-state {}})])
+              (log/spy backing-data)
               nil)
           (when sub-renderer
             (sub-renderer backing-data)))))))

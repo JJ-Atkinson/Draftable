@@ -4,7 +4,7 @@
             ["@fluentui/react" :refer (PrimaryButton Stack DefaultButton ThemeProvider PartialTheme
                                         createTheme Dropdown DropdownMenuItemType Text Layer
                                         TextField Pivot PivotItem Label TooltipHost
-                                        DirectionalHint SearchBox)]
+                                        DirectionalHint SearchBox Slider)]
             ["@fluentui/react/lib/Icons" :refer (initializeIcons )]
             ["@fluentui/react/lib/Icon" :refer (FontIcon )]
             [taoensso.timbre :as log]
@@ -191,3 +191,5 @@
 ;; see grouped list
 
 (def layer (-interop-factory Layer))
+
+(def slider (-interop-factory Slider))

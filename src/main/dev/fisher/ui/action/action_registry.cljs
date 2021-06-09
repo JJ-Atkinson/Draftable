@@ -2,8 +2,6 @@
   (:require
     [cljs.spec.alpha :as s]
     [dev.fisher.ui.keyboard.keyboard-constants :as k-const]
-    [dev.fisher.ui.workspaces.workspaces-manager :as wm]
-[dev.fisher.ui.action.editor :as actions.editor]
     [com.fulcrologic.guardrails.core :refer [>defn =>]]
     [app.SPA :refer [SPA]]
     [taoensso.encore :as enc]
@@ -115,18 +113,6 @@
    ::invoke            #(js/console.log "Edit clj config")
    ::description       "Alerts ya"
    ::default-key-combo ["f" "e" "c"]})
-
-(register-action!
-  {::id                :action/new-card
-   ::title             "New Blank Card"
-   ::invoke            #(actions.editor/new-card)
-   ::default-key-combo ["n"]})
-
-(register-action!
-  {::id                :action/open-file
-   ::title             "Open File"
-   ::invoke            #(actions.editor/open-file-as-card)
-   ::default-key-combo ["o"]})
 
 (defn eval-str [NS s]
   (js/console.log "CLJS_EVAL:" (pr-str NS) s)

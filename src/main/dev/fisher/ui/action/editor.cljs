@@ -5,7 +5,7 @@
     [com.fulcrologic.fulcro.data-fetch :as df]
     [dev.fisher.data-model.card-data :as card-data]
     [dev.fisher.ui.card.card :as card]
-    [dev.fisher.ui.card.card-content :as card-content]
+    
     [dev.fisher.ui.perspectives.code :as code-card]
     [dev.fisher.ui.workspaces.workspaces-manager :as wm]))
 
@@ -15,7 +15,7 @@
    (let [cardid   (gensym "CARD_")
          carddata {::card-data/code      code
                    ::card-data/namespace NS
-                   ::card-content/id     cardid
+                   ::card-data/id     cardid
                    :source-file          file}]
      (comp/transact! SPA
        [(card/set-perspective {:id             cardid
