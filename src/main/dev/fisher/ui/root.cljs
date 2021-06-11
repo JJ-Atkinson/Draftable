@@ -39,7 +39,7 @@
 
 (defmutation initialize [{:as params}]
   (action [{:keys [state app]}]
-    (uism/begin! app keyboard-sm/keyboard-listener-uism 
-      ::keyboard-listener 
+    (uism/begin! app keyboard-sm/keyboard-listener-uism
+      ::keyboard-listener
       {:actor/whichkey-display [:component/id ::whichkey-display/id]
        :actor/status-display   [:component/id ::status-bar/id]})))

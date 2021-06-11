@@ -4,6 +4,7 @@
     [com.fulcrologic.fulcro.algorithms.normalized-state :as fns :refer [swap!->]]
     [com.fulcrologic.fulcro.dom :as dom]
     [com.fulcrologic.fulcro.mutations :as m :refer [defmutation]]
+    [com.fulcrologic.fulcro.ui-state-machines :as uism]
     [app.SPA :refer [SPA]]
     [dev.fisher.fluentui-wrappers :as fui]
     [com.fulcrologic.fulcro.dom.events :as events]
@@ -29,6 +30,12 @@
   (defn sort-by-key [contents-map]
     (sort-by (comp k-const/coerce-key-combo-matcher first) comparator contents-map)))
 
+(defn trigger-key! [key-desc]
+  (when-not (:modifier-key? key-desc)
+    (uism/trigger! SPA :dev.fisher.ui.root/keyboard-listener
+      :event/global-key-pressed
+      {:key-desc key-desc})))
+
 (defsc WhichkeyDisplay [this {:keys [::id ui/visible? ui/contents-map] :as props}]
   {:query         [::id
                    :ui/visible?
@@ -43,7 +50,8 @@
                  (let [group? (not (action-registry/action? action))
                        item (dom/div :.whichkey-item
                               {:key     combo
-                               :classes [(when group? "whichkey-group-identifier")]}
+                               :classes [(when group? "whichkey-group-identifier")]
+                               :onClick #(trigger-key! combo)}
                               (str combo)
                               (dom/div :.whichkey-dot)
                               (str (or title "untitled-group")))]
