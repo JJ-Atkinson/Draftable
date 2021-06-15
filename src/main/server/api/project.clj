@@ -6,12 +6,27 @@
     [taoensso.encore :as enc]))
 
 (comment
-  (-> (kondo/run!
-        {:lint ["src/dev/user.clj"] :config {:output {:analysis true}}})
-    :analysis
-    :namespace-definitions
-    first
-    :name)
+  (letfn [(index [f coll]
+            (reduce (fn [m v] (assoc m (f v) v)) {} coll))
+          (index-in [f coll]
+            (reduce (fn [m v] (assoc-in m (f v) v)) {} coll))]
+    (let [{:as analysis :keys [var-definitions var-usages]}
+          (-> {:lint ["src/main/server"]
+               :config {:output {:analysis true}}}
+            (kondo/run!)
+            :analysis)
+          defs (map #(select-keys % [:filename :ns :name]) var-definitions)
+          indexed-defs (index-in (juxt :ns :name) defs)]
+      (reduce (fn [idefs {:as usage :keys [from from-var]}]
+                (cond-> idefs
+                  (and from from-var)
+                  (update-in [from from-var :usages]
+                    (fnil conj [])
+                    (select-keys usage
+                      [:name :to]))))
+        indexed-defs
+        (remove (comp #{'clojure.core} :to) var-usages))
+      ))
   )
 
 (defn all-project-ns []

@@ -11,6 +11,7 @@
     [dev.fisher.ui.perspectives.perspectives-importer]
     [dev.fisher.fluentui-wrappers :as fui]
     [dev.fisher.ui.keyboard.keyboard-sm :as keyboard-sm]
+    [dev.fisher.ui.code-graph :as code-graph]
 
     [taoensso.encore :as enc]
     [com.fulcrologic.fulcro.ui-state-machines :as uism]))
@@ -26,7 +27,8 @@
                    ::search-view       {}
                    ::status-bar        {}
                    ::whichkey          {}}}
-  (fui/theme-provider {:applyTo "body" :theme fui/dark-theme}
+  (code-graph/ui-code-graph)
+  #_(fui/theme-provider {:applyTo "body" :theme fui/dark-theme}
     (dom/div :.root
       (fui/vstack (assoc fui/nogap-stack
                     :verticalFill true)
